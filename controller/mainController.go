@@ -53,12 +53,28 @@ func NewMainController() *MainController {
 		Title: "go-express",
 		Stylesheets: []string {
 			"../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css",
-			"../assets/css/ie10-viewport-bug-workaround.css",
+            "../assets/css/ie10-viewport-bug-workaround.css",
+            "../extensions/angular-1.5.0/togglemenu_boot/togglemenu.css",
+            "../extensions/angular-1.5.0/angular-aside/css/angular-aside.min.css",
+            "../extensions/angular-1.5.0/angular-busy/angular-busy.css",
+            "../extensions/angular-1.5.0/toaster/toaster.css",
+            "../css/MaterialIcons/material-icons.css",
+            "../css/fontawesome/css/font-awesome.min.css",
 			"../css/normalize.css",
 			"../css/main-style.css" },
 		Javscripts: []string {
 			"../js/jquery-1.11.3/jquery-1.11.3.min.js",
-			"../extensions/bootstrap-3.3.5/dist/js/bootstrap.min.js" },
+            "../extensions/bootstrap-3.3.5/dist/js/bootstrap.min.js",
+            "../extensions/angular-1.5.0/angular.min.js",
+            "../extensions/angular-1.5.0/ui-bootstrap-tpls-1.2.0.min.js",
+            "../extensions/angular-1.5.0/angular-route.min.js",
+            "../extensions/angular-1.5.0/togglemenu_boot/togglemenu.js",
+            "../extensions/angular-1.5.0/angular-aside/js/angular-aside.min.js",
+            "../extensions/angular-1.5.0/angular-sanitize.min.js",
+            "../extensions/angular-1.5.0/angular-animate/angular-animate.min.js",
+            "../extensions/angular-1.5.0/i18n/angular-locale_zh-cn.js",
+            "../extensions/angular-1.5.0/angular-busy/angular-busy.js",
+            "../extensions/angular-1.5.0/toaster/toaster.js"},
 		Startup : "" }
 	controller.Banner = LoadHeaderFromTemplate()
 	controller.Content = LoadContentFromTemplate()

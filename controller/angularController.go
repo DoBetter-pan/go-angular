@@ -35,6 +35,7 @@ func (controller *AngularController) IndexAction(w http.ResponseWriter, r *http.
 	</script>`
 
 	mainConterller := NewMainController()
+    /*
 	//add new javascript and css
 	mainConterller.Stylesheets = append(mainConterller.Stylesheets, []string{
         "../extensions/angular-1.5.0/togglemenu_boot/togglemenu.css",
@@ -54,6 +55,7 @@ func (controller *AngularController) IndexAction(w http.ResponseWriter, r *http.
         "../extensions/angular-1.5.0/i18n/angular-locale_zh-cn.js",
         "../extensions/angular-1.5.0/angular-busy/angular-busy.js",
         "../extensions/angular-1.5.0/toaster/toaster.js"}...)
+    */
 	mainConterller.Startup = template.HTML(startup)
 	mainConterller.Content = LoadAngularIndexFromTemplate()
 	mainConterller.RenderMainFrame(w, r)

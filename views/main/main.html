@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="mainApp">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,7 +16,7 @@
     {{ end }}
   </head>
 
-  <body>
+  <body ng-controller="MainController">
 
     <div class="container">
 
@@ -24,7 +24,6 @@
       <header role="banner">
         {{.Banner}}
       </header>
-      <hr class="hr-solid"/>
 
       <!--main-->
       <main role="main">
