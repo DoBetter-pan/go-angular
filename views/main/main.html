@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="go express">
+    <meta name="author" content="panyingx">
+    <link rel="icon" href="../icon/favicon.ico">
+
+    <title>{{ .Title }}</title>
+    <!-- CSS -->
+    {{ range .Stylesheets }}
+    <link rel="stylesheet" href="{{.}}">  
+    {{ end }}
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <!--header-->
+      <header role="banner">
+        {{.Banner}}
+      </header>
+      <hr class="hr-solid"/>
+
+      <!--main-->
+      <main role="main">
+        {{.Content}}
+      </main>
+
+      <hr class="hr-solid"/>
+      <!--footer-->
+      <footer role="contentinfo">
+        {{.Footer}}        
+      </footer>
+    </div>
+  
+    <!-- JAVASCRIPT -->
+    {{ range .Javscripts }}
+    <script src="{{.}}"></script> 
+    {{ end }}
+    <!--startup-->
+    {{.Startup}}
+</script>
+</body>
+</html>
