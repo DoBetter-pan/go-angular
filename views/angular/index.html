@@ -1,7 +1,30 @@
 <div>
-    <h1>Hello World!!!</h1>
-    <h1>Hello World!!!</h1>
-    <h1>Hello World!!!</h1>
-    <h1>Hello World!!!</h1>
+	<div layout layout-align="center top" class="navtogglediv navtogglediv-show-hide" ng-show="$root.isRouteLoading" ng-cloak>
+		<div style="font-size:52px;" class="fa fa-cog fa-spin"></div>
+	</div>
+	
+	<div class="container-fluid" >
+		<div class="row">
+			<div ng-show="leftNavLock" class="col-md-2 hidden-sm hidden-xs leftLockNav-show-hide" style="padding: 0px;margin-top: 50px;">
+				<ul class="docs-menu">
+					<div style="color: #357BB7;padding: 10px 10px 0px;">
+						<p>
+                            <i>菜单功能</i>
+                            <span style="font-size: 22px;cursor: pointer;color:#333;" class="pull-right material-icons" ng-click="toggleLeftNavLock()" uib-tooltip="隐藏菜单" tooltip-placement="left">lock</span>
+                        </p>
+					</div>
+					<li style="cursor: pointer;" ng-repeat="menu in menu.menus" ng-class="{'childActive' : isSectionSelected(menu)}">
+			      		 <menu-link menu="menu" ng-if="menu.type === 'link'"></menu-link>
+			             <menu-toggle menu="menu" ng-if="menu.type === 'toggle'"></menu-toggle>
+			      	</li>
+				</ul>
+			</div>
+			<div ng-class="{'col-md-10':leftNavLock}" class="leftLockNav-show-hide col-sm-12 col-xs-12" ng-style="pageContentStyle">
+				<h3 style="etter-spacing: -1px;font-weight:normal;margin-top:10px;">[[getNavName()]]</h3>
+				<div ng-view></div>
+			</div>
+		</div>
+		<toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'position-class': 'toast-bottom-right'}"></toaster-container>
+	</div>
 </div>  
 
