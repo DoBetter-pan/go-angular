@@ -74,7 +74,8 @@ func NewMainController() *MainController {
             "../extensions/angular-1.5.0/angular-animate/angular-animate.min.js",
             "../extensions/angular-1.5.0/i18n/angular-locale_zh-cn.js",
             "../extensions/angular-1.5.0/angular-busy/angular-busy.js",
-            "../extensions/angular-1.5.0/toaster/toaster.js"},
+            "../extensions/angular-1.5.0/toaster/toaster.js",
+            "../js/app.js"},
 		Startup : "" }
 	controller.Banner = LoadHeaderFromTemplate()
 	controller.Content = LoadContentFromTemplate()
