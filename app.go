@@ -14,7 +14,7 @@ import (
 	"log"
 	"fmt"
 	"flag"
-	controller "go-angular/controller"
+	controller "go-angular/server/controller"
 )
 
 type params struct {
@@ -54,9 +54,9 @@ func controllerAction(w http.ResponseWriter, r *http.Request, c Controller) {
 	method.Call([]reflect.Value{responseValue, requestValue})
 }
 
-func angularHandler(w http.ResponseWriter, r *http.Request) {
-	angular := controller.NewAngularController()
-	controller := reflect.ValueOf(angular)
+func contentHandler(w http.ResponseWriter, r *http.Request) {
+	content := controller.NewContentController()
+	controller := reflect.ValueOf(content)
 	controllerAction(w, r, func() reflect.Value {
 		return controller
 		})
@@ -72,9 +72,11 @@ func main() {
 	http.Handle("/icons/", http.FileServer(http.Dir("public")))
 	http.Handle("/imges/", http.FileServer(http.Dir("public")))
 	http.Handle("/js/", http.FileServer(http.Dir("public")))
+	//set app directory 
+	http.Handle("/app/", http.FileServer(http.Dir("app")))
 
-	http.HandleFunc("/", angularHandler)
-	http.HandleFunc("/angular/", angularHandler)
+	http.HandleFunc("/", contentHandler)
+	http.HandleFunc("/content/", contentHandler)
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {

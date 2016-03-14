@@ -37,20 +37,20 @@ func LoadInfoFromTemplate(filename string) string {
 }
 
 func LoadHeaderFromTemplate() template.HTML {
-	return template.HTML(LoadInfoFromTemplate("views/main/header.html"))
+	return template.HTML(LoadInfoFromTemplate("server/views/main/header.html"))
 }
 
 func LoadContentFromTemplate() template.HTML {
-	return template.HTML(LoadInfoFromTemplate("views/main/content.html"))
+	return template.HTML(LoadInfoFromTemplate("server/views/main/content.html"))
 }
 
 func LoadFooterFromTemplate() template.HTML {
-	return template.HTML(LoadInfoFromTemplate("views/main/footer.html"))
+	return template.HTML(LoadInfoFromTemplate("server/views/main/footer.html"))
 }
 
 func NewMainController() *MainController {
 	controller := &MainController{
-		Title: "go-express",
+		Title: "go-angular",
 		Stylesheets: []string {
 			"../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css",
             "../assets/css/ie10-viewport-bug-workaround.css",
@@ -84,7 +84,7 @@ func NewMainController() *MainController {
 }
 
 func (controller *MainController) RenderMainFrame(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("views/main/main.html")
+	tmpl, err := template.ParseFiles("server/views/main/main.html")
 	if err != nil {
 		log.Fatal("MainController::RenderMainFrame: ", err)
 	}
