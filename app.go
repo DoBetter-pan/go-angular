@@ -54,10 +54,67 @@ func controllerAction(w http.ResponseWriter, r *http.Request, c Controller) {
 	method.Call([]reflect.Value{responseValue, requestValue})
 }
 
+func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
+	path := strings.Trim(r.URL.Path, "/")
+	parts := strings.Split(path, "/")
+
+	action := ""
+	id := ""
+	if len(parts) > 1 {
+		id = parts[1]
+	}	
+	method := r.Method
+	switch method {
+		case "GET":
+			if id == "" {
+				action = "Query"
+			} else {
+				action = "Get"
+			}
+		case "POST":
+			if id == "" {
+				action = "New"
+			} else {
+				action = "Update"
+			}
+		case "DELETE":
+			action = "Delete"
+		/*	
+		case "PUT":
+			action = "Update"
+		case "HEAD":
+			action = "Head"
+		case "PATCH":
+			action = "Patch"
+		case "OPTIONS":
+			action = "Options"
+		*/	
+		default:
+			action = "Query"		
+	}
+
+	controller := c()
+	operation := controller.MethodByName(action)
+	if !operation.IsValid() {
+		operation = controller.MethodByName("Get")
+	}
+	requestValue := reflect.ValueOf(r)
+	responseValue := reflect.ValueOf(w)
+	operation.Call([]reflect.Value{responseValue, requestValue})
+}
+
 func contentHandler(w http.ResponseWriter, r *http.Request) {
 	content := controller.NewContentController()
 	controller := reflect.ValueOf(content)
 	controllerAction(w, r, func() reflect.Value {
+		return controller
+		})
+}
+
+func recipeHandler(w http.ResponseWriter, r *http.Request) {
+	recipe := controller.NewRecipeController()
+	controller := reflect.ValueOf(recipe)
+	controllerResty(w, r, func() reflect.Value {
 		return controller
 		})
 }
@@ -73,10 +130,11 @@ func main() {
 	http.Handle("/imges/", http.FileServer(http.Dir("public")))
 	http.Handle("/js/", http.FileServer(http.Dir("public")))
 	//set app directory 
-	http.Handle("/app/", http.FileServer(http.Dir("app")))
+	http.Handle("/app/", http.FileServer(http.Dir("client")))
 
 	http.HandleFunc("/", contentHandler)
 	http.HandleFunc("/content/", contentHandler)
+	http.HandleFunc("/recipe/", recipeHandler)
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {

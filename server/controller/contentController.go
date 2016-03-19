@@ -9,7 +9,7 @@ package controller
 
 import (
 	"net/http"
-	_ "log"
+	"log"
 	_ "fmt"
 	_ "io/ioutil"
 	"html/template"
@@ -22,27 +22,12 @@ func NewContentController() *ContentController {
 	return &ContentController{}
 }
 
-func LoadContentIndexFromTemplate() template.HTML {
-	return template.HTML(LoadInfoFromTemplate("server/views/content/index.html"))
-}
 
 func (controller *ContentController) IndexAction(w http.ResponseWriter, r *http.Request) {
-	startup := `
-	<script type="text/javascript">
-    $(function() {
-        console.log("started....")
-    });	
-	</script>`
+     tmpl, err := template.ParseFiles("client/app/content/index.html")
+    if err != nil {
+        log.Fatal("MainController::RenderMainFrame: ", err)
+    }
 
-	mainConterller := NewMainController()
-	//add new javascript and css
-	mainConterller.Stylesheets = append(mainConterller.Stylesheets, []string{
-        "../content/styles/main.scss"}...)  
-    mainConterller.Javscripts = append(mainConterller.Javscripts, []string{
-        "../content/script/controllers/main.js",
-        "../content/script/controllers/about.js",
-        "../content/script/app.js"}...)
-	mainConterller.Startup = template.HTML(startup)
-	mainConterller.Content = LoadContentIndexFromTemplate()
-	mainConterller.RenderMainFrame(w, r)
+    err = tmpl.Execute(w, controller)   
 }
