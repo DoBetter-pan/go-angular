@@ -11,14 +11,15 @@ import (
 	"net/http"
 	"log"
 	"fmt"
-	_ "io/ioutil"
+    "strings"
+	"io/ioutil"
 	"html/template"
 )
 
 var s_data map[string]string = map[string]string {"1":`
 {
 	"id": "1",
-	"title": "Cookies",
+	"title": "Cookie1",
 	"description": "Delicious, crisp on the outside, chewy on the outside, oozing with chocolatey goodness cookies. The best kind.",
 	"ingredients": [
 	{
@@ -31,7 +32,7 @@ var s_data map[string]string = map[string]string {"1":`
 }`,"2":`
 {
 	"id": "2",
-	"title": "Cookies",
+	"title": "Cookie2",
 	"description": "Delicious, crisp on the outside, chewy on the outside, oozing with chocolatey goodness cookies. The best kind.",
 	"ingredients": [
 	{
@@ -41,6 +42,14 @@ var s_data map[string]string = map[string]string {"1":`
 	}
 	],
 	"instructions": "1. Go buy a paket of Chips Ahoy\n2. Heat it up in an oven\n3. Enjoy warm cookies\n4. Learn how to bake cookies from somewhere else"
+}`}
+
+var s_retCode map[string] string = map[string] string{"success":`{
+    "status": 1,
+    "message": "successful"
+}`, "error":`{
+    "status": 0,
+    "message": "unsuccessful"
 }`}
 
 type RecipeController struct {
@@ -62,12 +71,16 @@ func (controller *RecipeController) Query(w http.ResponseWriter, r *http.Request
 }
 
 func (controller *RecipeController) Get(w http.ResponseWriter, r *http.Request) {
-     tmpl, err := template.ParseFiles("app/content/index.html")
-    if err != nil {
-        log.Fatal("MainController::RenderMainFrame: ", err)
-    }
+	path := strings.Trim(r.URL.Path, "/")
+	parts := strings.Split(path, "/")
 
-    err = tmpl.Execute(w, controller)   
+	id := ""
+	if len(parts) > 1 {
+		id = parts[1]
+	} else {
+        id = "1"
+    }
+	fmt.Fprint(w, s_data[id])
 }
 
 func (controller *RecipeController) New(w http.ResponseWriter, r *http.Request) {
@@ -80,12 +93,22 @@ func (controller *RecipeController) New(w http.ResponseWriter, r *http.Request) 
 }
 
 func (controller *RecipeController) Update(w http.ResponseWriter, r *http.Request) {
-     tmpl, err := template.ParseFiles("app/content/index.html")
-    if err != nil {
-        log.Fatal("MainController::RenderMainFrame: ", err)
+	path := strings.Trim(r.URL.Path, "/")
+	parts := strings.Split(path, "/")
+	id := ""
+	if len(parts) > 1 {
+		id = parts[1]
+	} else {
+        id = "1"
     }
 
-    err = tmpl.Execute(w, controller)   
+    //r.ParseForm()
+    defer r.Body.Close()
+    data, err := ioutil.ReadAll(r.Body)
+    if err == nil {
+        s_data[id] = string(data)
+    }
+	fmt.Fprint(w, s_data[id])
 }
 
 func (controller *RecipeController) Delete(w http.ResponseWriter, r *http.Request) {

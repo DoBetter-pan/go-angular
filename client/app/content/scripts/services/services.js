@@ -35,3 +35,4 @@ services.factory('RecipeLoader', ['Recipe', '$route', '$q', function(Recipe, $ro
     return delay.promise;
   }
 }]);
+

@@ -40,7 +40,7 @@ app.controller('NewCtrl', ['$scope', '$location', 'Recipe', function($scope, $lo
 
 	$scope.save = function(){
 		$scope.recipe.$save(function(recipe){
-			$location.path('/view/' + recipe.id);
+			$location.path('/#/view/' + recipe.id);
 		});
 	};
 }]);

@@ -20,7 +20,7 @@ app.config(['$routeProvider', function($routeProvider){
       }
     },
     templateUrl: 'app/content//views/list.html'
-  }).when('edit/:recipeId', {
+  }).when('/edit/:recipeId', {
     controller: 'EditCtrl',
     resolve: {
       recipe: function(RecipeLoader){
@@ -28,7 +28,7 @@ app.config(['$routeProvider', function($routeProvider){
       }
     },
     templateUrl: 'app/content/views/recipeForm.html'
-  }).when('view/:recipeId', {
+  }).when('/view/:recipeId', {
     controller: 'ViewCtrl',
     resolve: {
       recipe: function(RecipeLoader) {
@@ -36,7 +36,7 @@ app.config(['$routeProvider', function($routeProvider){
       }
     },
     templateUrl: 'app/content/views/viewRecipe.html'
-  }).when('new', {
+  }).when('/new', {
     controller: 'NewCtrl',
     templateUrl: 'app/content/views/recipeForm.html'
   }).otherwise({redirectTo: '/'});
