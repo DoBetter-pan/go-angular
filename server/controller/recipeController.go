@@ -84,12 +84,15 @@ func (controller *RecipeController) Get(w http.ResponseWriter, r *http.Request) 
 }
 
 func (controller *RecipeController) New(w http.ResponseWriter, r *http.Request) {
-     tmpl, err := template.ParseFiles("app/content/index.html")
-    if err != nil {
-        log.Fatal("MainController::RenderMainFrame: ", err)
-    }
+	id := "100"
 
-    err = tmpl.Execute(w, controller)   
+    //r.ParseForm()
+    defer r.Body.Close()
+    data, err := ioutil.ReadAll(r.Body)
+    if err == nil {
+        s_data[id] = string(data)
+    }
+	fmt.Fprint(w, s_data[id])
 }
 
 func (controller *RecipeController) Update(w http.ResponseWriter, r *http.Request) {

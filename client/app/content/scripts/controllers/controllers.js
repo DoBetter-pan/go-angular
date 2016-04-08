@@ -35,12 +35,13 @@ app.controller('EditCtrl', ['$scope', '$location', 'recipe', function($scope, $l
 
 app.controller('NewCtrl', ['$scope', '$location', 'Recipe', function($scope, $location, Recipe){
 	$scope.recipe = new Recipe({
+        id: -1,
 		ingredients: [{}]
 	});
 
 	$scope.save = function(){
 		$scope.recipe.$save(function(recipe){
-			$location.path('/#/view/' + recipe.id);
+			$location.path('/view/' + recipe.id);
 		});
 	};
 }]);
