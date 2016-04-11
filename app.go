@@ -62,7 +62,7 @@ func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
 	id := ""
 	if len(parts) > 1 {
 		id = parts[1]
-	}	
+	}
 	method := r.Method
 	switch method {
 		case "GET":
@@ -72,25 +72,26 @@ func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
 				action = "Get"
 			}
 		case "POST":
-			if id == "" {
+            //-1 represent new item
+			if id == "-1" {
 				action = "New"
 			} else {
 				action = "Update"
 			}
 		case "DELETE":
 			action = "Delete"
-		/*	
 		case "PUT":
 			action = "Update"
+		/*	
 		case "HEAD":
 			action = "Head"
 		case "PATCH":
 			action = "Patch"
 		case "OPTIONS":
 			action = "Options"
-		*/	
+		*/
 		default:
-			action = "Query"		
+			action = "Query"
 	}
 
 	controller := c()

@@ -39,7 +39,7 @@
 
 	<div class="form-actions">
 		<button class="btn btn-primary">Save</button>
-		<button type="button" class="btn" ng-show="!recipe.id" ng-click="remove()">Delete</button>
+		<button type="button" class="btn" ng-show="recipe.id!=-1" ng-click="remove()">Delete</button>
 	</div>
 	
 </form>

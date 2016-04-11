@@ -9,13 +9,13 @@ package controller
 
 import (
 	"net/http"
-	"log"
 	"fmt"
     "strings"
+    "strconv"
 	"io/ioutil"
-	"html/template"
 )
 
+var s_data_len = 2
 var s_data map[string]string = map[string]string {"1":`
 {
 	"id": "1",
@@ -84,15 +84,19 @@ func (controller *RecipeController) Get(w http.ResponseWriter, r *http.Request) 
 }
 
 func (controller *RecipeController) New(w http.ResponseWriter, r *http.Request) {
-	id := "100"
-
     //r.ParseForm()
     defer r.Body.Close()
     data, err := ioutil.ReadAll(r.Body)
     if err == nil {
-        s_data[id] = string(data)
+        s_data_len += 1
+	    id := strconv.Itoa(s_data_len)
+        nid := fmt.Sprintf(`"id":%s`, id)
+        ndata := strings.Replace(string(data), `"id":-1`, nid, -1)
+        s_data[id] = string(ndata)
+	    fmt.Fprint(w, s_data[id])
+    } else {
+	    fmt.Fprint(w, s_data["1"])
     }
-	fmt.Fprint(w, s_data[id])
 }
 
 func (controller *RecipeController) Update(w http.ResponseWriter, r *http.Request) {
@@ -115,11 +119,16 @@ func (controller *RecipeController) Update(w http.ResponseWriter, r *http.Reques
 }
 
 func (controller *RecipeController) Delete(w http.ResponseWriter, r *http.Request) {
-     tmpl, err := template.ParseFiles("app/content/index.html")
-    if err != nil {
-        log.Fatal("MainController::RenderMainFrame: ", err)
-    }
+	path := strings.Trim(r.URL.Path, "/")
+	parts := strings.Split(path, "/")
 
-    err = tmpl.Execute(w, controller)   
+	id := ""
+	if len(parts) > 1 {
+		id = parts[1]
+	} else {
+        id = "1"
+    }
+    delete(s_data, id)
+	fmt.Fprint(w, s_retCode["success"])
 }
 
