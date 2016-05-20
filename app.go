@@ -104,17 +104,17 @@ func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
 	operation.Call([]reflect.Value{responseValue, requestValue})
 }
 
-func contentHandler(w http.ResponseWriter, r *http.Request) {
-	content := controller.NewContentController()
-	controller := reflect.ValueOf(content)
+func recipeHandler(w http.ResponseWriter, r *http.Request) {
+	recipe := controller.NewRecipeController()
+	controller := reflect.ValueOf(recipe)
 	controllerAction(w, r, func() reflect.Value {
 		return controller
 		})
 }
 
-func recipeHandler(w http.ResponseWriter, r *http.Request) {
-	recipe := controller.NewRecipeController()
-	controller := reflect.ValueOf(recipe)
+func recipeSrvHandler(w http.ResponseWriter, r *http.Request) {
+	recipeSrv := controller.NewRecipeSrvController()
+	controller := reflect.ValueOf(recipeSrv)
 	controllerResty(w, r, func() reflect.Value {
 		return controller
 		})
@@ -133,9 +133,9 @@ func main() {
 	//set app directory 
 	http.Handle("/app/", http.FileServer(http.Dir("client")))
 
-	http.HandleFunc("/", contentHandler)
-	http.HandleFunc("/content/", contentHandler)
+	http.HandleFunc("/", recipeHandler)
 	http.HandleFunc("/recipe/", recipeHandler)
+	http.HandleFunc("/recipesrv/", recipeSrvHandler)
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {

@@ -8,14 +8,14 @@
 var services = angular.module('guthub.services', ['ngResource']);
 
 /*get, save, query, remove, delete*/
-services.factory('Recipe', ['$resource', function($resource){
-  return $resource('/recipe/:id', {id: '@id'});
+services.factory('RecipeSrv', ['$resource', function($resource){
+  return $resource('/recipesrv/:id', {id: '@id'});
 }]);
 
-services.factory('MultiRecipeLoader', ['Recipe', '$q', function(Recipe, $q){
+services.factory('MultiRecipeLoader', ['RecipeSrv', '$q', function(RecipeSrv, $q){
   return function() {
     var delay = $q.defer();
-    Recipe.query(function(recipes){
+    RecipeSrv.query(function(recipes){
       delay.resolve(recipes);
     }, function(){
       delay.reject('Unable to fetch recipes');
@@ -24,10 +24,10 @@ services.factory('MultiRecipeLoader', ['Recipe', '$q', function(Recipe, $q){
   }
 }]);
 
-services.factory('RecipeLoader', ['Recipe', '$route', '$q', function(Recipe, $route, $q){
+services.factory('RecipeLoader', ['RecipeSrv', '$route', '$q', function(RecipeSrv, $route, $q){
   return function() {
     var delay = $q.defer();
-    Recipe.get({id:$route.current.params.recipeId}, function(recipe){
+    RecipeSrv.get({id:$route.current.params.recipeId}, function(recipe){
       delay.resolve(recipe);
     }, function(){
       delay.reject('Unable to fetch recipe ' + $route.current.params.recipeId);

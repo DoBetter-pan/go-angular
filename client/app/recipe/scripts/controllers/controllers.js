@@ -34,8 +34,8 @@ app.controller('EditCtrl', ['$scope', '$location', 'recipe', function($scope, $l
 	};
 }]);
 
-app.controller('NewCtrl', ['$scope', '$location', 'Recipe', function($scope, $location, Recipe){
-	$scope.recipe = new Recipe({
+app.controller('NewCtrl', ['$scope', '$location', 'RecipeSrv', function($scope, $location, RecipeSrv){
+	$scope.recipe = new RecipeSrv({
         id: -1,
 		ingredients: [{}]
 	});
