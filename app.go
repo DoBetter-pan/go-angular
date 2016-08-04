@@ -133,7 +133,7 @@ func main() {
 	//set app directory 
 	http.Handle("/app/", http.FileServer(http.Dir("client")))
 
-	http.HandleFunc("/", recipeHandler)
+	//http.HandleFunc("/", recipeHandler)
 	http.HandleFunc("/recipe/", recipeHandler)
 	http.HandleFunc("/recipesrv/", recipeSrvHandler)
     server := fmt.Sprintf("%s:%d", p.host, p.port)

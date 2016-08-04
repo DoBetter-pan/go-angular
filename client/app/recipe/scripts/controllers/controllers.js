@@ -6,7 +6,7 @@
  */
 
 app.controller('ListCtrl', ['$scope', 'recipes', function($scope, recipes){
-   console.log(recipes);
+  //console.log(recipes);
   $scope.recipes = recipes;
 }]);
 
