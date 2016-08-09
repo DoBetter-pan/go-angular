@@ -62,13 +62,13 @@ func NewRecipeSrvController() *RecipeSrvController {
 
 func (controller *RecipeSrvController) Query(w http.ResponseWriter, r *http.Request) {
     recipe := &model.RecipeSrvModel{}
-    data, err := recipe.FindAll()
+    res, err := recipe.FindAll()
     if err != nil {
-        data = "[]"
+        res = "[]"
     }
 
     w.Header().Set("Content-Type", "application/json; charset=utf-8") // normal header
-	fmt.Fprint(w, data)
+	fmt.Fprint(w, res)
 }
 
 func (controller *RecipeSrvController) Get(w http.ResponseWriter, r *http.Request) {
@@ -88,29 +88,26 @@ func (controller *RecipeSrvController) Get(w http.ResponseWriter, r *http.Reques
     }
 
     recipe := &model.RecipeSrvModel{}
-    data, err := recipe.Find(num)
+    res, err := recipe.Find(num)
     if err != nil {
-        data = "{}"
+        res = "{}"
     }
 
     w.Header().Set("Content-Type", "application/json; charset=utf-8") // normal header
-	fmt.Fprint(w, data)
+	fmt.Fprint(w, res)
 }
 
 func (controller *RecipeSrvController) New(w http.ResponseWriter, r *http.Request) {
     //r.ParseForm()
     defer r.Body.Close()
     data, err := ioutil.ReadAll(r.Body)
-    if err == nil {
-        s_data_len += 1
-	    id := strconv.Itoa(s_data_len)
-        nid := fmt.Sprintf(`"id":%s`, id)
-        ndata := strings.Replace(string(data), `"id":-1`, nid, -1)
-        s_data[id] = string(ndata)
-	    fmt.Fprint(w, s_data[id])
-    } else {
-	    fmt.Fprint(w, s_data["1"])
+    recipe := &model.RecipeSrvModel{}
+    res, err := recipe.Insert(string(data))
+    if err != nil {
+        res = "{}"
     }
+    w.Header().Set("Content-Type", "application/json; charset=utf-8") // normal header
+	fmt.Fprint(w, res)
 }
 
 func (controller *RecipeSrvController) Update(w http.ResponseWriter, r *http.Request) {

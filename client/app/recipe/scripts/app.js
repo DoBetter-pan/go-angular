@@ -8,36 +8,36 @@
 var app = angular.module('guthub', ['ngRoute', 'guthub.services', 'guthub.directives']);
 
 app.config(['$interpolateProvider', function($interpolateProvider){
-  $interpolateProvider.startSymbol('[[').endSymbol(']]');
+    $interpolateProvider.startSymbol('[[').endSymbol(']]');
 }]);
 
 app.config(['$routeProvider', function($routeProvider){
-  $routeProvider.when('/', {
-    controller: 'ListCtrl',
+    $routeProvider.when('/', {
+        controller: 'ListCtrl',
+        resolve: {
+            recipes: function(MultiRecipeLoader) {
+                return MultiRecipeLoader();
+            }
+        },
+        templateUrl: '/app/recipe/views/list.html'
+    }).when('/edit/:recipeId', {
+        controller: 'EditCtrl',
     resolve: {
-      recipes: function(MultiRecipeLoader) {
-        return MultiRecipeLoader();
-      }
-    },
-    templateUrl: '/app/recipe/views/list.html'
-  }).when('/edit/:recipeId', {
-    controller: 'EditCtrl',
-    resolve: {
-      recipe: function(RecipeLoader){
-        return RecipeLoader();
-      }
+        recipe: function(RecipeLoader){
+            return RecipeLoader();
+        }
     },
     templateUrl: '/app/recipe/views/recipeForm.html'
-  }).when('/view/:recipeId', {
-    controller: 'ViewCtrl',
+    }).when('/view/:recipeId', {
+        controller: 'ViewCtrl',
     resolve: {
-      recipe: function(RecipeLoader) {
-        return RecipeLoader();
-      }
+        recipe: function(RecipeLoader) {
+            return RecipeLoader();
+        }
     },
     templateUrl: '/app/recipe/views/viewRecipe.html'
-  }).when('/new', {
-    controller: 'NewCtrl',
+    }).when('/new', {
+        controller: 'NewCtrl',
     templateUrl: '/app/recipe/views/recipeForm.html'
-  }).otherwise({redirectTo: '/'});
+    }).otherwise({redirectTo: '/'});
 }]);

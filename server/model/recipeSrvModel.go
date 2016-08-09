@@ -114,3 +114,62 @@ func (model *RecipeSrvModel) Find(id int64) (string, error) {
     return string(data), nil
 }
 
+func (model *RecipeSrvModel) Insert(data string) (string, error) {
+    var recipe Recipe
+
+    err := json.Unmarshal([]byte(data), &recipe)
+    if err != nil {
+        return "", err
+    }
+    dbconnection := dbwrapper.GetDatabaseConnection()
+
+    tx, err := dbconnection.DB.Begin()
+    if err != nil {
+        return "", err
+    }
+
+    res, err := tx.Exec("insert into recipe(title,description,instructions) values(?,?,?)", recipe.Title, recipe.Description, recipe.Instructions)
+    if err != nil {
+        tx.Rollback()
+        return "", err
+    }
+
+    recipeId, err := res.LastInsertId()
+    if err != nil {
+        tx.Rollback()
+        return "", err
+    }
+
+    var ingredientid int64 = 0
+    for _, ingre := range(recipe.Ingredients) {
+        row := tx.QueryRow("select id from ingredient where name=?", ingre.IngredientName)
+        //don't check the error
+        err = row.Scan(&ingredientid)
+        if err != nil {
+            res, err := tx.Exec("insert into ingredient(name,unit) values(?,?)", ingre.IngredientName, ingre.AmountUnits)
+            if err != nil {
+                tx.Rollback()
+                return "", err
+            }
+            ingredientid, err = res.LastInsertId()
+            if err != nil {
+                tx.Rollback()
+                return "", err
+            }
+        }
+        _, err = tx.Exec("insert into formula(recipeid,ingredientid,amount) values(?,?,?)", recipeId, ingredientid, ingre.Amount)
+        if err != nil {
+            tx.Rollback()
+            return "", err
+        }
+    }
+    tx.Commit()
+
+    recipe.Id = recipeId
+    response, err := json.Marshal(recipe)
+    if err != nil {
+        return "", err
+    }
+
+    return string(response), nil
+}

@@ -20,7 +20,7 @@
 		<div class="controls">
 			<ul class="unstyled" id="ingredients" ng-controller="IngredientsCtrl">
 				<li ng-repeat="ingredient in recipe.ingredients">
-					<input class="input-mini" ng-model="ingredient.amount">
+					<input class="input-mini" ng-model="ingredient.amount" integer>
 					<input class="input-small" ng-model="ingredient.amountUnits">
 					<input ng-model="ingredient.ingredientName">
 					<button type="button" class="btn btn-mini" ng-click="removeIngredient($index)"><i class="icon-minus-sign"></i>Delete</button>
