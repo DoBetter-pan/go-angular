@@ -16,35 +16,6 @@ import (
 	model "go-angular/server/model"
 )
 
-var s_data_len = 2
-var s_data map[string]string = map[string]string {"1":`
-{
-	"id": "1",
-	"title": "Cookie1",
-	"description": "Delicious, crisp on the outside, chewy on the outside, oozing with chocolatey goodness cookies. The best kind.",
-	"ingredients": [
-	{
-		"amount": "1",
-		"amountUnits": "packet",
-		"ingredientName": "Chips Ahoy"
-	}
-	],
-	"instructions": "1. Go buy a paket of Chips Ahoy\n2. Heat it up in an oven\n3. Enjoy warm cookies\n4. Learn how to bake cookies from somewhere else"
-}`,"2":`
-{
-	"id": "2",
-	"title": "Cookie2",
-	"description": "Delicious, crisp on the outside, chewy on the outside, oozing with chocolatey goodness cookies. The best kind.",
-	"ingredients": [
-	{
-		"amount": "1",
-		"amountUnits": "packet",
-		"ingredientName": "Chips Ahoy"
-	}
-	],
-	"instructions": "1. Go buy a paket of Chips Ahoy\n2. Heat it up in an oven\n3. Enjoy warm cookies\n4. Learn how to bake cookies from somewhere else"
-}`}
-
 var s_retCode map[string] string = map[string] string{"success":`{
     "status": 1,
     "message": "successful"
@@ -75,20 +46,17 @@ func (controller *RecipeSrvController) Get(w http.ResponseWriter, r *http.Reques
 	path := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
 
-	id := ""
-	if len(parts) > 1 {
-		id = parts[1]
-	} else {
-        id = "1"
-    }
-
-	num, err := strconv.ParseInt(id, 10, 64)
-    if err != nil {
-        num = 1
+	var id int64 = 1
+    if len(parts) > 1 {
+        num, err := strconv.ParseInt(parts[1], 10, 64)
+        if err != nil {
+            num = 1
+        }
+        id = num
     }
 
     recipe := &model.RecipeSrvModel{}
-    res, err := recipe.Find(num)
+    res, err := recipe.Find(id)
     if err != nil {
         res = "{}"
     }
@@ -98,48 +66,78 @@ func (controller *RecipeSrvController) Get(w http.ResponseWriter, r *http.Reques
 }
 
 func (controller *RecipeSrvController) New(w http.ResponseWriter, r *http.Request) {
+    res := "{}"
+
     //r.ParseForm()
     defer r.Body.Close()
     data, err := ioutil.ReadAll(r.Body)
-    recipe := &model.RecipeSrvModel{}
-    res, err := recipe.Insert(string(data))
-    if err != nil {
-        res = "{}"
+    if err == nil {
+        recipe := &model.RecipeSrvModel{}
+        res, err = recipe.Insert(string(data))
+        if err != nil {
+            res = "{}"
+        }
     }
+
     w.Header().Set("Content-Type", "application/json; charset=utf-8") // normal header
 	fmt.Fprint(w, res)
 }
 
 func (controller *RecipeSrvController) Update(w http.ResponseWriter, r *http.Request) {
+    res := "{}"
+
 	path := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
-	id := ""
-	if len(parts) > 1 {
-		id = parts[1]
-	} else {
-        id = "1"
+
+	var id int64 = 1
+    if len(parts) > 1 {
+        num, err := strconv.ParseInt(parts[1], 10, 64)
+        if err != nil {
+            num = 1
+        }
+        id = num
     }
 
     //r.ParseForm()
     defer r.Body.Close()
     data, err := ioutil.ReadAll(r.Body)
     if err == nil {
-        s_data[id] = string(data)
+        recipe := &model.RecipeSrvModel{}
+        res, err = recipe.Update(id, string(data))
+        if err != nil {
+            res, err = recipe.Find(id)
+            if err != nil {
+                res = "{}"
+            }
+        }
     }
-	fmt.Fprint(w, s_data[id])
+
+    w.Header().Set("Content-Type", "application/json; charset=utf-8") // normal header
+	fmt.Fprint(w, res)
 }
 
 func (controller *RecipeSrvController) Delete(w http.ResponseWriter, r *http.Request) {
 	path := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
 
-	id := ""
-	if len(parts) > 1 {
-		id = parts[1]
-	} else {
-        id = "1"
+	var id int64 = 1
+    if len(parts) > 1 {
+        num, err := strconv.ParseInt(parts[1], 10, 64)
+        if err != nil {
+            num = 1
+        }
+        id = num
     }
-    delete(s_data, id)
-	fmt.Fprint(w, s_retCode["success"])
+
+    res := ""
+    recipe := &model.RecipeSrvModel{}
+    err := recipe.Delete(id)
+    if err == nil {
+        res = s_retCode["success"]
+    } else {
+        res = s_retCode["error"]
+    }
+
+	fmt.Fprint(w, res)
 }
 

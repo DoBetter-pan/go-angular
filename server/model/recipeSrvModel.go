@@ -47,14 +47,15 @@ func (model *RecipeSrvModel) FindAll() (string, error) {
     recipeList := make([]Recipe, 0, 10)
     for rows.Next() {
         var recipe Recipe
-        if err := rows.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.Instructions); err == nil {
+        err = rows.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.Instructions)
+        if err == nil {
             recipe.Ingredients = make([]Ingredient, 0, 10)
             recipeList = append(recipeList, recipe)
         }
     }
 
     //check error
-    if err := rows.Err(); err != nil {
+    if err = rows.Err(); err != nil {
         return "", err
     }
 
@@ -114,15 +115,15 @@ func (model *RecipeSrvModel) Find(id int64) (string, error) {
     return string(data), nil
 }
 
-func (model *RecipeSrvModel) Insert(data string) (string, error) {
+func (model *RecipeSrvModel) Insert(str string) (string, error) {
     var recipe Recipe
 
-    err := json.Unmarshal([]byte(data), &recipe)
+    err := json.Unmarshal([]byte(str), &recipe)
     if err != nil {
         return "", err
     }
-    dbconnection := dbwrapper.GetDatabaseConnection()
 
+    dbconnection := dbwrapper.GetDatabaseConnection()
     tx, err := dbconnection.DB.Begin()
     if err != nil {
         return "", err
@@ -134,19 +135,18 @@ func (model *RecipeSrvModel) Insert(data string) (string, error) {
         return "", err
     }
 
-    recipeId, err := res.LastInsertId()
+    recipeid, err := res.LastInsertId()
     if err != nil {
         tx.Rollback()
         return "", err
     }
 
     var ingredientid int64 = 0
-    for _, ingre := range(recipe.Ingredients) {
-        row := tx.QueryRow("select id from ingredient where name=?", ingre.IngredientName)
-        //don't check the error
+    for _, ingredient := range(recipe.Ingredients) {
+        row := tx.QueryRow("select id from ingredient where name=? and unit=?", ingredient.IngredientName, ingredient.AmountUnits)
         err = row.Scan(&ingredientid)
         if err != nil {
-            res, err := tx.Exec("insert into ingredient(name,unit) values(?,?)", ingre.IngredientName, ingre.AmountUnits)
+            res, err = tx.Exec("insert into ingredient(name,unit) values(?,?)", ingredient.IngredientName, ingredient.AmountUnits)
             if err != nil {
                 tx.Rollback()
                 return "", err
@@ -157,7 +157,7 @@ func (model *RecipeSrvModel) Insert(data string) (string, error) {
                 return "", err
             }
         }
-        _, err = tx.Exec("insert into formula(recipeid,ingredientid,amount) values(?,?,?)", recipeId, ingredientid, ingre.Amount)
+        _, err = tx.Exec("insert into formula(recipeid,ingredientid,amount) values(?,?,?)", recipeid, ingredientid, ingredient.Amount)
         if err != nil {
             tx.Rollback()
             return "", err
@@ -165,11 +165,88 @@ func (model *RecipeSrvModel) Insert(data string) (string, error) {
     }
     tx.Commit()
 
-    recipe.Id = recipeId
-    response, err := json.Marshal(recipe)
+    recipe.Id = recipeid
+    data, err := json.Marshal(recipe)
     if err != nil {
         return "", err
     }
 
-    return string(response), nil
+    return string(data), nil
+}
+
+func (model *RecipeSrvModel) Update(id int64, str string) (string, error) {
+    var recipe Recipe
+
+    err := json.Unmarshal([]byte(str), &recipe)
+    if err != nil {
+        return "", err
+    }
+
+    dbconnection := dbwrapper.GetDatabaseConnection()
+    tx, err := dbconnection.DB.Begin()
+    if err != nil {
+        return "", err
+    }
+
+    //just update, not check if it is same before updating. It may be supported in future
+    res, err := tx.Exec("update recipe set title=?, description=?, instructions=? where id=?", recipe.Title, recipe.Description, recipe.Instructions, recipe.Id)
+    if err != nil {
+        tx.Rollback()
+        return "", err
+    }
+    //delete all formula with this recipe
+    res, err = tx.Exec("delete from formula where recipeid=?", recipe.Id)
+    if err != nil {
+        tx.Rollback()
+        return "", err
+    }
+
+    var ingredientid int64 = 0
+    for _, ingredient := range(recipe.Ingredients) {
+        row := tx.QueryRow("select id from ingredient where name=? and unit=?", ingredient.IngredientName, ingredient.AmountUnits)
+        err = row.Scan(&ingredientid)
+        if err != nil {
+            res, err = tx.Exec("insert into ingredient(name,unit) values(?,?)", ingredient.IngredientName, ingredient.AmountUnits)
+            if err != nil {
+                tx.Rollback()
+                return "", err
+            }
+            ingredientid, err = res.LastInsertId()
+            if err != nil {
+                tx.Rollback()
+                return "", err
+            }
+        }
+        _, err = tx.Exec("insert into formula(recipeid,ingredientid,amount) values(?,?,?)", recipe.Id, ingredientid, ingredient.Amount)
+        if err != nil {
+            tx.Rollback()
+            return "", err
+        }
+    }
+    tx.Commit()
+
+    return str, nil
+}
+
+func (model *RecipeSrvModel) Delete(id int64) error {
+    dbconnection := dbwrapper.GetDatabaseConnection()
+    tx, err := dbconnection.DB.Begin()
+    if err != nil {
+        return err
+    }
+
+    _, err = tx.Exec("delete from recipe where id=?", id)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+    //delete all formula with this recipe
+    _, err = tx.Exec("delete from formula where recipeid=?", id)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+    tx.Commit()
+
+    return nil
 }
