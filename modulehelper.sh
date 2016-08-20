@@ -167,6 +167,16 @@ case "$operation" in
         sed -i "s/##insert##/${insertsql}/g" $moduleSrvModel
         sed -i "s/##update##/${updatesql}/g" $moduleSrvModel
         sed -i "s/##delete##/${deletesql}/g" $moduleSrvModel
+        moduleHandler="func ${modulename}Handler(w http.ResponseWriter, r *http.Request) {\n"
+        moduleHandler="${moduleHandler}    ${modulename} := controller.New${modulenameCap}Controller()\n"
+        moduleHandler="${moduleHandler}    controller := reflect.ValueOf(${modulename})\n"
+        moduleHandler="${moduleHandler}    controllerAction(w, r, func() reflect.Value {\n"
+        moduleHandler="${moduleHandler}        return controller\n"
+        moduleHandler="${moduleHandler}        })\n"
+        moduleHandler="${moduleHandler}}\n\n"
+
+        sed -i "/func main/s/^/$moduleHandler/g" $basedir/app.go
+
         ;;
     "remove")
         echo "Remove the existed module $modulename"
