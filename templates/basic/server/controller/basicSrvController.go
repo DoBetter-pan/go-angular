@@ -13,7 +13,6 @@ import (
     "strings"
     "strconv"
 	"io/ioutil"
-    "encoding/json"
 	model "go-angular/server/model"
 )
 
@@ -123,7 +122,7 @@ func (controller *BasicSrvController) Delete(w http.ResponseWriter, r *http.Requ
 
     basic := &model.BasicSrvModel{}
     err := basic.Delete(id)
-    ret := GetError(err)
+    res := GetError(err)
 
     SendBack(w, res)
 }

@@ -24,7 +24,7 @@ var sqls map[string] string = map[string] string {
     "queryone":"##queryone##",
     "insert":"##insert##",
     "update":"##update##",
-    "delete":"##delete##"
+    "delete":"##delete##",
 }
 
 type BasicSrvModel struct {
@@ -132,7 +132,7 @@ func (model *BasicSrvModel) Update(id int64, str string) (string, error) {
     }
 
     //just update, not check if it is same before updating. It may be supported in future
-    res, err := tx.Exec(sqls["update"], ##updateitemlist##)
+    _, err = tx.Exec(sqls["update"], ##updateitemlist##)
     if err != nil {
         tx.Rollback()
         return "", err

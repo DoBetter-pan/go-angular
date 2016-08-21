@@ -103,8 +103,8 @@ case "$operation" in
         moduleSrvController=$controllerpath/${modulename}SrvController.go
         echo "Cteate $moduleSrvController ... "
         cp $templatescontrollerpath/${templatename}SrvController.go $moduleSrvController
-        sed -i "s/$templatename/$modulename/g" $moduleController
-        sed -i "s/$templatenameCap/$modulenameCap/g" $moduleController
+        sed -i "s/$templatename/$modulename/g" $moduleSrvController
+        sed -i "s/$templatenameCap/$modulenameCap/g" $moduleSrvController
 
         index=0
         sqlflag=0
@@ -114,29 +114,35 @@ case "$operation" in
         insertsqlvalue=""
         updatesqlitems=""
         jsonitems="    "
+        scanitemlist=""
+        insertitemlist=""
         templateSrvData=$templatesdatapath/${templatename}SrvData.txt
         while IFS='|' read -ra sqlcolumn; do
             if [ $index -ne 0 ]; then
                 createsqlitems=${createsqlitems},
                 selectsqlitems=${selectsqlitems},
                 jsonitems="${jsonitems}\n    "
+                scanitemlist=${scanitemlist},
             fi
             for info in "${sqlcolumn[@]}"; do
                 createsqlitems="${createsqlitems} ${info}"
             done
+            columnNameCap=`capitalize ${sqlcolumn[0]}`
             if [ $sqlflag -ne 0 ]; then
                 insertsqlcolumn=${insertsqlcolumn},
                 insertsqlvalue=${insertsqlvalue},
                 updatesqlitems=${updatesqlitems},
+                insertitemlist=${insertitemlist},
             fi
             selectsqlitems="${selectsqlitems} ${sqlcolumn[0]}"
+            scanitemlist="${scanitemlist} \&${modulename}.${columnNameCap}"
             if [ ${sqlcolumn[0]} != "id" ]; then
                 insertsqlcolumn="${insertsqlcolumn} ${sqlcolumn[0]}"
                 insertsqlvalue="${insertsqlvalue} ?"
                 updatesqlitems="${updatesqlitems} ${sqlcolumn[0]}=?"
+                insertitemlist="${insertitemlist} ${modulename}.${columnNameCap}"
                 sqlflag=1
             fi
-            columnNameCap=`capitalize ${sqlcolumn[0]}`
             substr ${sqlcolumn[1]} "char"
             if [ $? -eq 1 ]; then
                 jsonitems="${jsonitems} ${columnNameCap}  string \`json:\"${sqlcolumn[0]}\"\`"
@@ -167,6 +173,11 @@ case "$operation" in
         sed -i "s/##insert##/${insertsql}/g" $moduleSrvModel
         sed -i "s/##update##/${updatesql}/g" $moduleSrvModel
         sed -i "s/##delete##/${deletesql}/g" $moduleSrvModel
+        sed -i "s/##scanitemlist##/${scanitemlist}/g" $moduleSrvModel
+        sed -i "s/##insertitemlist##/${insertitemlist}/g" $moduleSrvModel
+        sed -i "s/##updateitemlist##/${insertitemlist}/g" $moduleSrvModel
+
+
         moduleHandler="func ${modulename}Handler(w http.ResponseWriter, r *http.Request) {\n"
         moduleHandler="${moduleHandler}    ${modulename} := controller.New${modulenameCap}Controller()\n"
         moduleHandler="${moduleHandler}    controller := reflect.ValueOf(${modulename})\n"
@@ -175,7 +186,21 @@ case "$operation" in
         moduleHandler="${moduleHandler}        })\n"
         moduleHandler="${moduleHandler}}\n\n"
 
+        moduleSrvHandler="func ${modulename}SrvHandler(w http.ResponseWriter, r *http.Request) {\n"
+        moduleSrvHandler="${moduleSrvHandler}    ${modulename}Srv := controller.New${modulenameCap}SrvController()\n"
+        moduleSrvHandler="${moduleSrvHandler}    controller := reflect.ValueOf(${modulename}Srv)\n"
+        moduleSrvHandler="${moduleSrvHandler}    controllerResty(w, r, func() reflect.Value {\n"
+        moduleSrvHandler="${moduleSrvHandler}        return controller\n"
+        moduleSrvHandler="${moduleSrvHandler}        })\n"
+        moduleSrvHandler="${moduleSrvHandler}}\n\n"
+
         sed -i "/func main/s/^/$moduleHandler/g" $basedir/app.go
+        sed -i "/func main/s/^/$moduleSrvHandler/g" $basedir/app.go
+
+        moduleHandlerPath="    http.HandleFunc\(\"\/${modulename}\/\", ${modulename}Handler\)\n"
+        moduleSrvHandlerPath="    http.HandleFunc\(\"\/${modulename}srv\/\", ${modulename}SrvHandler\)\n"
+        sed -i "/server := fmt.Sprintf/s/^/${moduleHandlerPath}/g" $basedir/app.go
+        sed -i "/server := fmt.Sprintf/s/^/${moduleSrvHandlerPath}/g" $basedir/app.go
 
         ;;
     "remove")
@@ -184,6 +209,18 @@ case "$operation" in
         rm $controllerpath/${modulename}SrvController.go
         rm $modelpath/${modulename}SrvModel.go
         rm $datapath/${modulename}SrvData.sql
+
+        moduleHandler="func ${modulename}Handler"
+        moduleSrvHandler="func ${modulename}SrvHandler"
+
+        sed -i "/${moduleHandler}/{N;N;N;N;N;N;N;d}" $basedir/app.go
+        sed -i "/${moduleSrvHandler}/{N;N;N;N;N;N;N;d}" $basedir/app.go
+
+        moduleHandlerPath="http.HandleFunc(\"\/${modulename}\/\", ${modulename}Handler)"
+        moduleSrvHandlerPath="http.HandleFunc(\"\/${modulename}srv\/\", ${modulename}SrvHandler)"
+
+        sed -i "/${moduleHandlerPath}/d" $basedir/app.go
+        sed -i "/${moduleSrvHandlerPath}/d" $basedir/app.go
         ;;
 esac
 
