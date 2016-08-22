@@ -120,6 +120,22 @@ func recipeSrvHandler(w http.ResponseWriter, r *http.Request) {
 		})
 }
 
+func blogHandler(w http.ResponseWriter, r *http.Request) {
+    blog := controller.NewBlogController()
+    controller := reflect.ValueOf(blog)
+    controllerAction(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
+func blogSrvHandler(w http.ResponseWriter, r *http.Request) {
+    blogSrv := controller.NewBlogSrvController()
+    controller := reflect.ValueOf(blogSrv)
+    controllerResty(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
 func main() {
     p := handleCommandLine()
 
@@ -136,6 +152,8 @@ func main() {
 	//http.HandleFunc("/", recipeHandler)
 	http.HandleFunc("/recipe/", recipeHandler)
 	http.HandleFunc("/recipesrv/", recipeSrvHandler)
+    http.HandleFunc("/blog/", blogHandler)
+    http.HandleFunc("/blogsrv/", blogSrvHandler)
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {

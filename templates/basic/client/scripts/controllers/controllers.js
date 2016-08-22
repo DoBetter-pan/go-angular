@@ -36,8 +36,7 @@ app.controller('EditCtrl', ['$scope', '$location', 'basic', function($scope, $lo
 
 app.controller('NewCtrl', ['$scope', '$location', 'BasicSrv', function($scope, $location, BasicSrv){
     $scope.basic = new BasicSrv({
-        id: -1,
-        ingredients: [{}]
+        id: -1
     });
 
     $scope.save = function(){

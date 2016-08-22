@@ -152,6 +152,7 @@ case "$operation" in
             fi
             index=$(( $index + 1 ))
         done < $templateSrvData
+        insertitemlist="${insertitemlist}, ${modulename}.Id"
         
         createsql="create table ${modulename} ($createsqlitems)"
         moduleSrvData=$datapath/${modulename}SrvData.sql
@@ -212,12 +213,12 @@ case "$operation" in
         sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/views/list.html
         sed -i "s/$templatename/$modulename/g" ${clientappmodule}/views/view.html
         sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/views/view.html
-        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/views/from.html
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/views/form.html
         sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/views/form.html
         sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/app.js
         sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/app.js
-        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/services/service.js
-        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/services/service.js
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/services/services.js
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/services/services.js
         sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/directives/directives.js
         sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/directives/directives.js
         sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/controllers/controllers.js
