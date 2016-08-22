@@ -94,6 +94,7 @@ case "$operation" in
         templatenameCap=`capitalize $templatename`
         modulenameCap=`capitalize $modulename`
 
+        #server
         moduleController=$controllerpath/${modulename}Controller.go
         echo "Cteate $moduleController ... "
         cp $templatescontrollerpath/${templatename}Controller.go $moduleController
@@ -202,9 +203,30 @@ case "$operation" in
         sed -i "/server := fmt.Sprintf/s/^/${moduleHandlerPath}/g" $basedir/app.go
         sed -i "/server := fmt.Sprintf/s/^/${moduleSrvHandlerPath}/g" $basedir/app.go
 
+        #client
+        clientappmodule=${basedir}/client/app/${modulename}
+        cp ${templatespath}/${templatename}/client ${clientappmodule} -fr
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/index.html
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/index.html
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/views/list.html
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/views/list.html
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/views/view.html
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/views/view.html
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/views/from.html
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/views/form.html
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/app.js
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/app.js
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/services/service.js
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/services/service.js
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/directives/directives.js
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/directives/directives.js
+        sed -i "s/$templatename/$modulename/g" ${clientappmodule}/scripts/controllers/controllers.js
+        sed -i "s/$templatenameCap/$modulenameCap/g" ${clientappmodule}/scripts/controllers/controllers.js
+
         ;;
     "remove")
         echo "Remove the existed module $modulename"
+        #server
         rm $controllerpath/${modulename}Controller.go
         rm $controllerpath/${modulename}SrvController.go
         rm $modelpath/${modulename}SrvModel.go
@@ -221,6 +243,11 @@ case "$operation" in
 
         sed -i "/${moduleHandlerPath}/d" $basedir/app.go
         sed -i "/${moduleSrvHandlerPath}/d" $basedir/app.go
+
+        #client
+        rm ${basedir}/client/app/${modulename} -fr
+
+
         ;;
 esac
 
