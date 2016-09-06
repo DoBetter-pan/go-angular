@@ -8,9 +8,13 @@ function usage() {
     exit 1
 }
 
+#function capitalize() {
+#    split=( $1 )
+#    echo "${split[*]^}"
+#}
+
 function capitalize() {
-    split=( $1 )
-    echo "${split[*]^}"
+    echo $1 | sed 's/./\U&/'
 }
 
 function substr() {

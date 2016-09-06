@@ -1,6 +1,6 @@
 /**
-* @file basicSrvModel.go
-* @brief basic service model
+* @file blogSrvModel.go
+* @brief blog service model
 * @author yingx
 * @date 2015-02-27
  */
@@ -15,39 +15,42 @@ import (
 	dbwrapper "go-angular/server/datawrapper"
 )
 
-type Basic struct {
-##Item##
+type Blog struct {
+     Id int64 `json:"id"`
+     Name  string `json:"name"`
+     Age int64 `json:"age"`
+     Sex int64 `json:"sex"`
 }
 
-var basicSqls map[string] string = map[string] string {
-    "query":"##query##",
-    "queryone":"##queryone##",
-    "insert":"##insert##",
-    "update":"##update##",
-    "delete":"##delete##",
+var blogSqls map[string] string = map[string] string {
+    "query":"select id, name, age, sex from blog",
+    "queryone":"select id, name, age, sex from blog where id=?",
+    "insert":"insert into blog( name, age, sex) values( ?, ?, ?)",
+    "update":"update blog set name=?, age=?, sex=? where id=?",
+    "delete":"delete from blog where id=?",
 }
 
-type BasicSrvModel struct {
+type BlogSrvModel struct {
 }
 
-func NewBasicSrvModel() *BasicSrvModel {
-	return &BasicSrvModel{}
+func NewBlogSrvModel() *BlogSrvModel {
+	return &BlogSrvModel{}
 }
 
-func (model *BasicSrvModel) FindAll() (string, error) {
+func (model *BlogSrvModel) FindAll() (string, error) {
     dbconnection := dbwrapper.GetDatabaseConnection()
-    rows, err := dbconnection.DB.Query(basicSqls["query"])
+    rows, err := dbconnection.DB.Query(blogSqls["query"])
     if err != nil {
         return "", err
     }
     defer rows.Close()
 
-    basicList := make([]Basic, 0, 10)
+    blogList := make([]Blog, 0, 10)
     for rows.Next() {
-        var basic Basic
-        err = rows.Scan(##scanitemlist##)
+        var blog Blog
+        err = rows.Scan( &blog.Id, &blog.Name, &blog.Age, &blog.Sex)
         if err == nil {
-            basicList = append(basicList, basic)
+            blogList = append(blogList, blog)
         }
     }
 
@@ -56,7 +59,7 @@ func (model *BasicSrvModel) FindAll() (string, error) {
         return "", err
     }
 
-    data, err := json.Marshal(basicList)
+    data, err := json.Marshal(blogList)
     if err != nil {
         return "", err
     }
@@ -64,15 +67,15 @@ func (model *BasicSrvModel) FindAll() (string, error) {
     return string(data), nil
 }
 
-func (model *BasicSrvModel) Find(id int64) (string, error) {
-    var basic Basic
+func (model *BlogSrvModel) Find(id int64) (string, error) {
+    var blog Blog
     dbconnection := dbwrapper.GetDatabaseConnection()
-    err := dbconnection.DB.QueryRow(basicSqls["queryone"], id).Scan(##scanitemlist##)
+    err := dbconnection.DB.QueryRow(blogSqls["queryone"], id).Scan( &blog.Id, &blog.Name, &blog.Age, &blog.Sex)
     if err != nil {
         return "", err
     }
 
-    data, err := json.Marshal(basic)
+    data, err := json.Marshal(blog)
     if err != nil {
         return "", err
     }
@@ -80,10 +83,10 @@ func (model *BasicSrvModel) Find(id int64) (string, error) {
     return string(data), nil
 }
 
-func (model *BasicSrvModel) Insert(str string) (string, error) {
-    var basic Basic
+func (model *BlogSrvModel) Insert(str string) (string, error) {
+    var blog Blog
 
-    err := json.Unmarshal([]byte(str), &basic)
+    err := json.Unmarshal([]byte(str), &blog)
     if err != nil {
         return "", err
     }
@@ -94,13 +97,13 @@ func (model *BasicSrvModel) Insert(str string) (string, error) {
         return "", err
     }
 
-    res, err := tx.Exec(basicSqls["insert"], ##insertitemlist##)
+    res, err := tx.Exec(blogSqls["insert"],  blog.Name, blog.Age, blog.Sex, blog.Id)
     if err != nil {
         tx.Rollback()
         return "", err
     }
 
-    basicid, err := res.LastInsertId()
+    blogid, err := res.LastInsertId()
     if err != nil {
         tx.Rollback()
         return "", err
@@ -108,8 +111,8 @@ func (model *BasicSrvModel) Insert(str string) (string, error) {
 
     tx.Commit()
 
-    basic.Id = basicid
-    data, err := json.Marshal(basic)
+    blog.Id = blogid
+    data, err := json.Marshal(blog)
     if err != nil {
         return "", err
     }
@@ -117,10 +120,10 @@ func (model *BasicSrvModel) Insert(str string) (string, error) {
     return string(data), nil
 }
 
-func (model *BasicSrvModel) Update(id int64, str string) (string, error) {
-    var basic Basic
+func (model *BlogSrvModel) Update(id int64, str string) (string, error) {
+    var blog Blog
 
-    err := json.Unmarshal([]byte(str), &basic)
+    err := json.Unmarshal([]byte(str), &blog)
     if err != nil {
         return "", err
     }
@@ -132,7 +135,7 @@ func (model *BasicSrvModel) Update(id int64, str string) (string, error) {
     }
 
     //just update, not check if it is same before updating. It may be supported in future
-    _, err = tx.Exec(basicSqls["update"], ##updateitemlist##)
+    _, err = tx.Exec(blogSqls["update"],  blog.Name, blog.Age, blog.Sex, blog.Id)
     if err != nil {
         tx.Rollback()
         return "", err
@@ -143,14 +146,14 @@ func (model *BasicSrvModel) Update(id int64, str string) (string, error) {
     return str, nil
 }
 
-func (model *BasicSrvModel) Delete(id int64) error {
+func (model *BlogSrvModel) Delete(id int64) error {
     dbconnection := dbwrapper.GetDatabaseConnection()
     tx, err := dbconnection.DB.Begin()
     if err != nil {
         return err
     }
 
-    _, err = tx.Exec(basicSqls["delete"], id)
+    _, err = tx.Exec(blogSqls["delete"], id)
     if err != nil {
         tx.Rollback()
         return err
