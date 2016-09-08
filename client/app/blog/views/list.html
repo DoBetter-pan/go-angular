@@ -6,16 +6,14 @@
 
   	<!-- Content body -->
 	<div class="content-body">
-    	<ul ng-repeat="cat in articles">
-      		<li>
-        		<h3>[[cat.description]]<a href="[[cat.url]]">[[cat.name]]</a></h3>
-      		</li>
-		    <ul class="recent-post" ng-repeat="art in cat.articles">
-		        <li>
-		        	<a href="[[art.url]]" title="[[art.titleHtml]]">[[art.titleHtml]]</a>
-		        </li>
-		    </ul>
-    	</ul>
+    	<div ng-repeat="artInfo in articles">
+            <div ng-repeat="art in artInfo.articles">
+        	    <h3><a href="#">[[art.titleHtml]]</a></h3>
+                <div>
+                [[art.contentHtml]]
+		        </div>
+            </div>
+    	</div>
 	</div>
 	<!-- ./Content body --> 
 </div>

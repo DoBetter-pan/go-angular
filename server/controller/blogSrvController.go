@@ -8,7 +8,8 @@
 package controller
 
 import (
-    "fmt"
+    _ "fmt"
+    "strconv"
 	"net/http"
 	"io/ioutil"
 	model "go-angular/server/model"
@@ -25,29 +26,40 @@ func (controller *BlogSrvController) Query(w http.ResponseWriter, r *http.Reques
     res := "[]"
     err := r.ParseForm()
     if err == nil {
+        isFirstPage := true
         k := ""
-        v := ""
+        v := int64(0)
+        p := int64(0)
 
         va, ok := r.Form["s"]
         if ok {
             k = "s"
-            v = va[0]
+            v, err = strconv.ParseInt(va[0], 10, 64)
+            isFirstPage = false
         }
         va, ok = r.Form["c"]
         if ok {
             k = "c"
-            v = va[0]
+            v, err = strconv.ParseInt(va[0], 10, 64)
+            isFirstPage = false
         }
-
-        fmt.Println("=============>", k, "====>", v)
-        blog := &model.BlogSrvModel{} 
-        res, err = blog.FindAllByKeyValue(k, v)
-        if err != nil {
-            res = "[]"
-        }       
+        va, ok = r.Form["p"]
+        if ok && err == nil {
+            p, err = strconv.ParseInt(va[0], 10, 64)
+        }
+        if err == nil {
+            blog := &model.BlogSrvModel{}
+            if isFirstPage {
+                res, err = blog.FindAll()
+            } else {
+                res, err = blog.FindAllByKeyValue(k, v, p)
+            }
+            if err != nil {
+                res = "[]"
+            }
+        }
     }
 
-    fmt.Println("=============>", res)
     SendBack(w, res)
 }
 

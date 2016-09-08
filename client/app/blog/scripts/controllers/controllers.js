@@ -5,6 +5,11 @@
 * @date 2016-03-15
  */
 
+app.controller('IndexCtrl', ['$scope', 'articles', function($scope, articles){
+    //console.log(articles);
+    $scope.articles = articles;
+}]);
+
 app.controller('ListCtrl', ['$scope', 'articles', function($scope, articles){
     //console.log(articles);
     $scope.articles = articles;
