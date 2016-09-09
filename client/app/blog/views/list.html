@@ -7,11 +7,16 @@
   	<!-- Content body -->
 	<div class="content-body">
     	<div ng-repeat="artInfo in articles">
-            <div ng-repeat="art in artInfo.articles">
-        	    <h3><a href="#">[[art.titleHtml]]</a></h3>
-                <div>
-                [[art.contentHtml]]
+            <div class="article" ng-repeat="art in artInfo.articles">
+                <div class="article-title">
+        	        <a href="#">[[art.titleHtml]]</a>
+                </div>
+                <div class="article-header">
+                </div>
+                <div class="article-content">
+                    [[art.contentHtml]]
 		        </div>
+                <hr>
             </div>
     	</div>
 	</div>
