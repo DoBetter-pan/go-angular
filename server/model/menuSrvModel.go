@@ -8,7 +8,7 @@
 package model
 
 import (
-	"fmt"
+	_ "fmt"
     "encoding/json"
     _ "database/sql"
     _ "github.com/go-sql-driver/mysql"
@@ -85,38 +85,32 @@ func (model *MenuSrvModel) FindAllMenus() ([]Menu, error) {
         tx.Rollback()
         return menuList, err
     }
-    fmt.Println("===========>xxxxxxxxxxx" )
 
     menuLen := len(menuList)
     for i := 0; i < menuLen; i++ {
-        fmt.Println("===========>xxxxxxxxxxx" , menuList[i].MainMenu.Id )
         rowsCat, err := tx.Query(categorySqls["query"], menuList[i].MainMenu.Id)
         if err != nil {
-    fmt.Println("===========>111", err)
             tx.Rollback()
             return menuList, err
         }
         defer rowsCat.Close()
 
         for rowsCat.Next() {
-        fmt.Println("===========>yyyyyyyyyyyyy" )
             var cat Category
-            err = rows.Scan( &cat.Id, &cat.Name, &cat.Url)
+            err = rowsCat.Scan( &cat.Id, &cat.Name, &cat.Url)
             if err == nil {
                 menuList[i].SubMenu = append(menuList[i].SubMenu, cat)
-            }
+            } 
         }
 
         //check error
         if err = rows.Err(); err != nil {
-    fmt.Println("===========>222", err)
             tx.Rollback()
             return menuList, err
         }
     }
 
     tx.Commit()
-    fmt.Println("===========>", menuList)
 
     return menuList, nil
 }

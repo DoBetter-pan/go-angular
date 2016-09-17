@@ -5,43 +5,43 @@
 * @date 2016-03-15
  */
 
-app.controller('ListCtrl', ['$scope', 'blogs', function($scope, blogs){
-    //console.log(blogs);
-    $scope.blogs = blogs;
+app.controller('ListCtrl', ['$scope', 'articles', function($scope, articles){
+    //console.log(articles);
+    $scope.articles = articles;
 }]);
 
-app.controller('ViewCtrl', ['$scope', '$location', 'blog', function($scope, $location, blog){
-    $scope.blog = blog;
+app.controller('ViewCtrl', ['$scope', '$location', 'article', function($scope, $location, article){
+    $scope.article = article;
 
     $scope.edit = function(){
-        $location.path('/edit/' + blog.id);
+        $location.path('/edit/' + article.id);
     }
 }]);
 
-app.controller('EditCtrl', ['$scope', '$location', 'blog', function($scope, $location, blog){
-    $scope.blog = blog;
+app.controller('EditCtrl', ['$scope', '$location', 'article', function($scope, $location, article){
+    $scope.article = article;
 
     $scope.save = function(){
-        $scope.blog.$save(function(blog){
-            $location.path('/view/' + blog.id);
+        $scope.article.$save(function(article){
+            $location.path('/view/' + article.id);
         });
     };
 
     $scope.remove = function(){
-        $scope.blog.$remove(function(blog){
+        $scope.article.$remove(function(article){
             $location.path('/');
         });
     };
 }]);
 
 app.controller('NewCtrl', ['$scope', '$location', 'BlogSrv', function($scope, $location, BlogSrv){
-    $scope.blog = new BlogSrv({
+    $scope.article = new BlogSrv({
         id: -1
     });
 
     $scope.save = function(){
-        $scope.blog.$save(function(blog){
-            $location.path('/view/' + blog.id);
+        $scope.article.$save(function(article){
+            $location.path('/view/' + article.id);
         });
     };
 }]);

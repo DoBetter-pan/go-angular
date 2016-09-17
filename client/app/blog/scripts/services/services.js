@@ -9,16 +9,16 @@ var services = angular.module('blog.services', ['ngResource']);
 
 /*get, save, query, remove, delete*/
 services.factory('BlogSrv', ['$resource', function($resource){
-    return $resource('/blogsrv/:object/:id', {id: '@id'});
+    return $resource('/blogsrv/:id', {id: '@id'});
 }]);
 
 services.factory('MultiBlogLoader', ['BlogSrv', '$route', '$q', function(BlogSrv, $route, $q){
     return function() {
         var delay = $q.defer();
-        BlogSrv.query({object:$route.current.params.object, id:$route.current.params.id}, function(blogs){
-            delay.resolve(blogs);
+        BlogSrv.query({s:$route.current.params.s, c:$route.current.params.c, id:$route.current.params.id}, function(articles){
+            delay.resolve(articles);
         }, function(){
-            delay.reject('Unable to fetch blogs');
+            delay.reject('Unable to fetch articles');
         });
         return delay.promise;
     }

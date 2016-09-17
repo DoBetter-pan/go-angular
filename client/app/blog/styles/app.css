@@ -271,3 +271,52 @@ a:hover {
   -moz-border-radius-bottomleft: 5px;
   -moz-border-radius-bottomright: 5px;
 }
+
+.layout-main-footer {
+	color: #888;
+	margin: 5px 0 0 0;
+	padding: 5px 0;
+	font-size: .9em;
+}
+
+.layout-main-footer .copyright {
+	font-size: 14px;
+  line-height: 18px;
+	margin: 0 0 0 0;
+  padding: 5px 5px 5px 5px;  
+	text-align: center;
+}
+
+.layout-main-footer .counter {
+	color: #888;
+	font-size: 16px;
+	text-align: center;
+}
+
+.layout-main-footer hr {
+	border: 0 #ccc solid; 
+	border-top-width: 2px; 
+	clear: both; 
+	height: 0; 
+}
+
+.content {
+  //margin-top: 12px !important;
+  padding-top: 20px;
+  margin-bottom: 10px;  
+  border-top: 2px solid #f29149;
+}
+
+.content-header {
+  margin: 10px;
+}
+
+.content-body {
+  margin: 10px;
+}
+
+.recent-post {
+  padding-left: 30px;
+  margin:10px;
+  list-style-type: circle;
+}

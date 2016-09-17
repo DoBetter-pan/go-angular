@@ -8,7 +8,7 @@
 package controller
 
 import (
-    "fmt"
+    _ "fmt"
 	"net/http"
 	"log"
 	"html/template"
@@ -22,6 +22,7 @@ type BlogLink struct {
 
 type BlogMenu struct {
     MainMenu BlogLink
+    HasSubMenu bool
     SubMenu []BlogLink
 }
 
@@ -52,10 +53,9 @@ func NewBlogController() *BlogController {
         for _, subMenu := range(menu.SubMenu){
             blogMenu.SubMenu = append(blogMenu.SubMenu, BlogLink{Name:subMenu.Name, Url:subMenu.Url})
         }
+        blogMenu.HasSubMenu = (len(blogMenu.SubMenu) > 0)
         controller.Menus = append(controller.Menus, blogMenu)
     }
-
-    fmt.Println("===========>", controller)
 
     return controller
 }

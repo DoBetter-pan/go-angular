@@ -1,192 +1,99 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="blog">
-<head>
-	<meta charset="utf-8">
-  	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+  	<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  	<title>blog</title>
+    	<title>blog</title>
 
-  	<script src="../extensions/angular-1.5.0/angular.js"></script>
-  	<script src="../extensions/angular-1.5.0/angular-route.js"></script>
-  	<script src="../extensions/angular-1.5.0/angular-resource.js"></script>
+    	<script src="../extensions/angular-1.5.0/angular.js"></script>
+    	<script src="../extensions/angular-1.5.0/angular-route.js"></script>
+    	<script src="../extensions/angular-1.5.0/angular-resource.js"></script>
 
-  	<script src="../app/blog/scripts/directives/directives.js"></script>
-  	<script src="../app/blog/scripts/services/services.js"></script>
-  	<script src="../app/blog/scripts/app.js"></script>
-  	<script src="../app/blog/scripts/controllers/controllers.js"></script>
+    	<script src="../app/blog/scripts/directives/directives.js"></script>
+    	<script src="../app/blog/scripts/services/services.js"></script>
+    	<script src="../app/blog/scripts/app.js"></script>
+    	<script src="../app/blog/scripts/controllers/controllers.js"></script>
 
-  	<link rel="stylesheet" href="../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css">
-  	<link rel="stylesheet" href="../app/blog/styles/app.css">
+    	<link rel="stylesheet" href="../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css">
+    	<link rel="stylesheet" href="../app/blog/styles/app.css">
 
-  	<link rel="icon" href="../app/blog/images/favicon.ico">
-</head>
-<body>
-	<div class="layout-main">	
-  		<div class="layout-main-shortcut">
-  	  		<div class="container">
-  	  			<div class="row">	
-  	  				<div class="col-md-12">
-                        {{ range .Shortcuts }}
-                        <a href="{{ .Url }}">{{ .Name }}</a>
-                        {{ end }}
-  	  				</div> 
-  	  			</div> 
-  	  		</div> 		  	  		
-  		</div>
+    	<link rel="icon" href="../app/blog/images/favicon.ico">
+  </head>
+  <body>
+  	<div class="layout-main">	
+    		<div class="layout-main-shortcut">
+    	  		<div class="container">
+    	  			<div class="row">	
+    	  				<div class="col-md-12">
+                  {{ range .Shortcuts }}
+                  <a href="{{ .Url }}">{{ .Name }}</a>
+                  {{ end }}
+    	  				</div> 
+    	  			</div> 
+    	  		</div> 		  	  		
+    		</div>
 
-    <!-- header -->
-    <div class="layout-main-header">
-  	  		<div class="container">
-  	  			<div class="row">	
-  	  				<div class="col-md-12">
-                        <div class="menu-bar">
-                            <ul class="main-menu">
-                                {{ range .Menus }}
-                                <li class="main-menu-item">
-                                    <a href="{{ .MainMenu.Url }}">{{ .MainMenu.Name }}</a>
+        <!-- header -->
+        <div class="layout-main-header">
+      		<div class="container">
+      			<div class="row">	
+      				<div class="col-md-12">
+                <div class="menu-bar">
+                    <ul class="main-menu">
+                        {{ range .Menus }}
+                        <li class="main-menu-item">
+                            <a href="{{ .MainMenu.Url }}">{{ .MainMenu.Name }}</a>
+                            {{ if .HasSubMenu }}
+                            <ul class="sub-menu">
+                                {{ range .SubMenu }}
+                                <li class="sub-menu-item">
+                                  <a href="{{ .Url }}">{{ .Name }}</a>
                                 </li>
-                                <ul class="sub-menu">
-                                    {{ range .SubMenu }}
-                                        <li class="sub-menu-item">
-                                        <a href="{{ .Url }}">{{ .Name }}</a>
-                                        </li>
-                                    {{ end }}
-                                </ul>
                                 {{ end }}
-                            </ul>
-                        </div>
+                            </ul> 
+                            {{ end }}                                   
+                        </li>
+                        {{ end }}
+                    </ul>
+                </div>
+      				</div> 
+      			</div> 
+      		</div> 		  	  		
+        </div>    
 
-                        <!--
-      <div class="menu-bar">
-        <ul class="main-menu">
-          <li class="main-menu-item">
-            <a href="/index.php?r=site/index">首页</a>
-          </li>
-          <li class="main-menu-item">
-            <a href="/index.php?r=wordpress/wordpress/index&amp;cat=8">技术文档</a>
-            <ul class="sub-menu">
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=10">C语言基础</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=12">C语言进阶</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=11">PHP及WEB技术</a>
-              </li>
-              <li class="sub-menu-item sub-menu-last">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=13">Linux相关</a>
-              </li>
-            </ul>
-          </li>
-          <li class="main-menu-item">
-            <a href="/index.php?r=wordpress/wordpress/index&amp;cat=6">杂谈随笔</a>
-            <ul class="sub-menu">
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=7">生活随笔</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=14">影评书评</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=15">旅行见闻</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=16">糗事百科</a>
-              </li>
-              <li class="sub-menu-item sub-menu-last">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=2">笑话天地</a>
-              </li>
-            </ul>
-          </li>
-          <li class="main-menu-item">
-            <a href="/index.php?r=wordpress/wordpress/index&amp;cat=3">亲子天地</a>
-            <ul class="sub-menu">
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=4">大宝成长日记</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=17">大宝相册</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=18">大宝的宝物</a>
-              </li>
-              <li class="sub-menu-item sub-menu-last">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;cat=5">童言无忌</a>
-              </li>
-            </ul>
-          </li>
-          <li class="main-menu-item">
-            <a href="/index.php?r=poll/poll/index">问卷调查</a>
-          </li>
-          <li class="main-menu-item">
-            <a href="#">下载</a>
-            <ul class="sub-menu">
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;p=240">打字练习程序</a>
-              </li>
-              <li class="sub-menu-item">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;p=247">博客下载器</a>
-              </li>
-              <li class="sub-menu-item sub-menu-last">
-                <a href="/index.php?r=wordpress/wordpress/index&amp;p=583">博客下载器V2.0</a>
-              </li>
-            </ul>
-          </li>
-          <li class="main-menu-item">
-            <a  href="/index.php?r=wordpress/wordpress/index&amp;page_id=179">留言板</a>
-          </li>
-          <li class="main-menu-item">
-            <a href="/index.php?r=site/about">关于</a>
-            <ul class="sub-menu">
-              <li class="sub-menu-item">
-                <a href="/index.php?r=site/about">关于本站</a>
-              </li>
-              <li class="sub-menu-item sub-menu-last">
-                <a href="/index.php?r=site/aboutme">关于站主</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
+  	  	<div class="layout-main-content">
+          <div class="container">
+            <div class="row"> 
+              <div class="col-md-12">    
 
-      </div>
-      -->
-  	  				</div> 
-  	  			</div> 
-  	  		</div> 		  	  		
-    </div>    
+                <div butterbar>Loading...</div>
+                <div ng-view></div>
+                 
+              </div> 
+            </div> 
+          </div>      	  		
+  	  	</div>
 
-		<div class="layout-main-header">
-		  		
-		</div>
+        <!-- footer -->
+        <div class="layout-main-footer">
+          <div class="container">
+            <div class="row"> 
+              <div class="col-md-12 copyright">
+                <hr>
+                <a href="/index.php?r=site/about">关于</a>
+                &nbsp;|&nbsp;<a href="#">联系方式</a>
+                &nbsp;|&nbsp;<a href="#">版权</a>
+                &nbsp;|&nbsp;<a href="#">隐私权保护</a>
+                &nbsp;|&nbsp;<a href="#">法律声明</a>
+                <div class="counter">访问人数：88766</div>
+                Copyright © 2014 by <a href="#">Yingx Pan</a>.All Rights Reserved.
+              </div>
+            </div>
+          </div>
+        </div>
 
-	  	<div class="layout-main-content">
-	  		
-	  	</div>
-	  	<div class="layout-main-footer">
-	  		
-	  	</div>
-
-	</div>
-
-  <header>
-    <h1>blog</h1>
-  </header>
-
-  <div butterbar>Loading...</div>
-
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="col-sm-2">
-        <!--Sidebar-->
-        <div id="focus"><a href="/blog/#/new">New Basic</a></div>
-        <div><a href="/blog/#/">Basic List</a></div>
-      </div>
-      <div class="col-sm-10">
-        <div ng-view></div>        
-      </div>      
-    </div>
-  </div>
-</body>
+  	</div>
+  </body>
 </html>

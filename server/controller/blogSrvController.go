@@ -8,6 +8,7 @@
 package controller
 
 import (
+    "fmt"
 	"net/http"
 	"io/ioutil"
 	model "go-angular/server/model"
@@ -21,12 +22,32 @@ func NewBlogSrvController() *BlogSrvController {
 }
 
 func (controller *BlogSrvController) Query(w http.ResponseWriter, r *http.Request) {
-    blog := &model.BlogSrvModel{}
-    res, err := blog.FindAll()
-    if err != nil {
-        res = "[]"
+    res := "[]"
+    err := r.ParseForm()
+    if err == nil {
+        k := ""
+        v := ""
+
+        va, ok := r.Form["s"]
+        if ok {
+            k = "s"
+            v = va[0]
+        }
+        va, ok = r.Form["c"]
+        if ok {
+            k = "c"
+            v = va[0]
+        }
+
+        fmt.Println("=============>", k, "====>", v)
+        blog := &model.BlogSrvModel{} 
+        res, err = blog.FindAllByKeyValue(k, v)
+        if err != nil {
+            res = "[]"
+        }       
     }
 
+    fmt.Println("=============>", res)
     SendBack(w, res)
 }
 

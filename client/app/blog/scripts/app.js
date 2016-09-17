@@ -12,18 +12,10 @@ app.config(['$interpolateProvider', function($interpolateProvider){
 }]);
 
 app.config(['$routeProvider', function($routeProvider){
-    $routeProvider.when('/:object', {
+    $routeProvider.when('/list', {
         controller: 'ListCtrl',
         resolve: {
-            blogs: function(MultiBlogLoader) {
-                return MultiBlogLoader();
-            }
-        },
-        templateUrl: '/app/blog/views/list.html'
-    }).when('/:object/:id', {
-        controller: 'ListCtrl',
-        resolve: {
-            blogs: function(MultiBlogLoader) {
+            articles: function(MultiBlogLoader) {
                 return MultiBlogLoader();
             }
         },
@@ -31,21 +23,21 @@ app.config(['$routeProvider', function($routeProvider){
     }).when('/edit/:blogId', {
         controller: 'EditCtrl',
         resolve: {
-            blog: function(BlogLoader){
+            article: function(BlogLoader){
                 return BlogLoader();
             }
         },
         templateUrl: '/app/blog/views/form.html'
     }).when('/view/:blogId', {
         controller: 'ViewCtrl',
-    resolve: {
-        blog: function(BlogLoader) {
-            return BlogLoader();
-        }
-    },
-    templateUrl: '/app/blog/views/view.html'
+        resolve: {
+            article: function(BlogLoader) {
+                return BlogLoader();
+            }
+        },
+        templateUrl: '/app/blog/views/view.html'
     }).when('/new', {
         controller: 'NewCtrl',
-    templateUrl: '/app/blog/views/form.html'
-    }).otherwise({redirectTo: '/sec'});
+        templateUrl: '/app/blog/views/form.html'
+    }).otherwise({redirectTo: '/list'});
 }]);
