@@ -5,7 +5,7 @@
 * @date 2016-03-15
  */
 
-var directives = angular.module('blog.directives', []);
+var directives = angular.module('util.directives', []);
 
 directives.directive('butterbar', ['$rootScope', function($rootScope){
     return {
@@ -34,7 +34,7 @@ directives.directive('focus', function(){
 directives.directive('integer', function(){
     return {
         require: 'ngModel',
-    link: function(scope, element, attrs, ctrl){
+        link: function(scope, element, attrs, ctrl){
         ctrl.$parsers.unshift(function(viewValue){
             return parseInt(viewValue, 10);
         });

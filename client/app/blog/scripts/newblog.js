@@ -5,13 +5,13 @@
 * @date 2016-03-15
  */
 
-var app = angular.module('blog', ['ngRoute', 'blog.services', 'util.directives']);
+var newblog = angular.module('newblog', ['ngRoute', 'newblog.services', 'util.directives']);
 
-app.config(['$interpolateProvider', function($interpolateProvider){
+newblog.config(['$interpolateProvider', function($interpolateProvider){
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
 }]);
 
-app.config(['$routeProvider', function($routeProvider){
+newblog.config(['$routeProvider', function($routeProvider){
     $routeProvider.when('/', {
         controller: 'IndexCtrl',
         resolve: {
@@ -19,7 +19,7 @@ app.config(['$routeProvider', function($routeProvider){
                 return MultiBlogLoader();
             }
         },
-        templateUrl: '/app/blog/views/index.html'
+        templateUrl: '/app/blog/views/newblog.html'
     }).when('/list', {
         controller: 'ListCtrl',
         resolve: {

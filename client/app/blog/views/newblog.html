@@ -1,0 +1,36 @@
+<div class="site-content">
+    <form name="blogForm" class="form-horizontal" ng-submit="save()">
+        <div class="pull-left" width="60%">
+            <div class="control-group">
+                <label class="control-label" for="title">标题</label>
+                <div class="controls">
+                    <input class="input-xlarge" id="title" focus ng-model="blog.title">
+                </div>		
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="description">内容:</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" id="content" placeholder="" autofocus ng-model="blog.content"></textarea>
+                </div>		
+            </div>	
+        </div>	
+
+        <div class="pull-right">
+            <div class="form-actions">
+                <button class="btn btn-primary">Save</button>
+                <button type="button" class="btn" ng-show="recipe.id!=-1" ng-click="remove()">Delete</button>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Panel title</h3>
+                </div>
+                <div class="panel-body">
+                    Panel content
+                </div>
+            </div>
+        </div>	
+
+    </form>
+</div>

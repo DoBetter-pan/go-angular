@@ -26,25 +26,38 @@ type BlogMenu struct {
     SubMenu []BlogLink
 }
 
-type BlogController struct {
+type BlogMainParams struct {
     Shortcuts []BlogLink
     Menus []BlogMenu
 }
 
-func NewBlogController() *BlogController {
+type BlogNewParams struct {
+    Stylesheets []string
+    Javscripts []string
+    Startup template.HTML
+}
 
+type BlogController struct {
+}
+
+func NewBlogController() *BlogController {
     controller := &BlogController{}
+    return controller
+}
+
+func (controller *BlogController) IndexAction(w http.ResponseWriter, r *http.Request) {
+    mainParams := &BlogMainParams{}
 
     linkModel := &model.LinkSrvModel{}
     linkList, _ := linkModel.FindAllLinks()
-    controller.Shortcuts = make([]BlogLink, 0, 6)
+    mainParams.Shortcuts = make([]BlogLink, 0, 6)
     for _, link := range(linkList) {
-        controller.Shortcuts = append(controller.Shortcuts, BlogLink{Name:link.Name, Url:link.Url})
+        mainParams.Shortcuts = append(mainParams.Shortcuts, BlogLink{Name:link.Name, Url:link.Url})
     }
 
     menuModel := &model.MenuSrvModel{}
     menuList, _ := menuModel.FindAllMenus()
-    controller.Menus = make([]BlogMenu, 0, 12)
+    mainParams.Menus = make([]BlogMenu, 0, 12)
     for _, menu := range(menuList) {
         var blogMenu BlogMenu
         blogMenu.MainMenu.Name = menu.MainMenu.Name
@@ -54,18 +67,53 @@ func NewBlogController() *BlogController {
             blogMenu.SubMenu = append(blogMenu.SubMenu, BlogLink{Name:subMenu.Name, Url:subMenu.Url})
         }
         blogMenu.HasSubMenu = (len(blogMenu.SubMenu) > 0)
-        controller.Menus = append(controller.Menus, blogMenu)
+        mainParams.Menus = append(mainParams.Menus, blogMenu)
     }
-
-    return controller
-}
-
-
-func (controller *BlogController) IndexAction(w http.ResponseWriter, r *http.Request) {
-     tmpl, err := template.ParseFiles("client/app/blog/index.html")
+    tmpl, err := template.ParseFiles("client/app/blog/index.html")
     if err != nil {
         log.Fatal("BlogController::IndexAction: ", err)
     }
 
-    err = tmpl.Execute(w, controller)
+    err = tmpl.Execute(w, mainParams)
+}
+
+func (controller *BlogController) NewAction(w http.ResponseWriter, r *http.Request) {
+    /*
+    startup := `
+    <script type="text/javascript">
+    $(function() {
+        var ng_writer = new Simditor({ textarea: $('#ng-writer')});
+    }); 
+    </script>`
+    */
+
+    newParams := &BlogNewParams {
+        Stylesheets: []string {
+            "../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css",
+            "../extensions/simditor/styles/simditor.css",
+            "../app/blog/styles/newblog.css" },
+        Javscripts: []string {
+            "../extensions/angular-1.5.0/angular.js",
+            "../extensions/angular-1.5.0/angular-route.js",
+            "../extensions/angular-1.5.0/angular-resource.js",
+            "../app/blog/scripts/directives/directives.js",
+            "../app/blog/scripts/services/newblog.js",
+            "../app/blog/scripts/newblog.js",
+            "../app/blog/scripts/controllers/newblog.js",
+            "../js/jquery-1.11.3/jquery-1.11.3.min.js",
+            "../extensions/bootstrap-3.3.5/dist/js/bootstrap.min.js",
+            "../extensions/simditor/scripts/module.js",
+            "../extensions/simditor/scripts/hotkeys.js",
+            "../extensions/simditor/scripts/uploader.js",
+            "../extensions/simditor/scripts/simditor.js" },
+        Startup : "" }
+
+    //newParams.Startup = template.HTML(startup)
+
+    tmpl, err := template.ParseFiles("client/app/blog/newblog.html")
+    if err != nil {
+        log.Fatal("BlogController::NewAction: ", err)
+    }
+
+    err = tmpl.Execute(w, newParams)
 }
