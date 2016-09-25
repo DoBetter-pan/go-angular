@@ -7,17 +7,10 @@
 
     	<title>blog</title>
 
-    	<script src="../extensions/angular-1.5.0/angular.js"></script>
-    	<script src="../extensions/angular-1.5.0/angular-route.js"></script>
-    	<script src="../extensions/angular-1.5.0/angular-resource.js"></script>
-
-    	<script src="../app/blog/scripts/directives/directives.js"></script>
-    	<script src="../app/blog/scripts/services/services.js"></script>
-    	<script src="../app/blog/scripts/app.js"></script>
-    	<script src="../app/blog/scripts/controllers/controllers.js"></script>
-
-    	<link rel="stylesheet" href="../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css">
-    	<link rel="stylesheet" href="../app/blog/styles/app.css">
+        <!-- CSS -->
+        {{ range .Stylesheets }}
+        <link rel="stylesheet" type="text/css" href="{{.}}">  
+        {{ end }}
 
     	<link rel="icon" href="../app/blog/images/favicon.ico">
   </head>
@@ -95,5 +88,13 @@
         </div>
 
   	</div>
+
+    <!-- JAVASCRIPT -->
+    {{ range .Javscripts }}
+    <script src="{{.}}"></script>
+    {{ end }}
+    <!--startup-->
+    {{.Startup}}
+
   </body>
 </html>

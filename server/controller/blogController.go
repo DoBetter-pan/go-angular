@@ -27,6 +27,9 @@ type BlogMenu struct {
 }
 
 type BlogMainParams struct {
+    Stylesheets []string
+    Javscripts []string
+    Startup template.HTML
     Shortcuts []BlogLink
     Menus []BlogMenu
 }
@@ -46,7 +49,19 @@ func NewBlogController() *BlogController {
 }
 
 func (controller *BlogController) IndexAction(w http.ResponseWriter, r *http.Request) {
-    mainParams := &BlogMainParams{}
+    mainParams := &BlogMainParams{
+        Stylesheets: []string {
+            "../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css",
+            "../app/blog/styles/blog.css" },
+        Javscripts: []string {
+            "../extensions/angular-1.5.0/angular.js",
+            "../extensions/angular-1.5.0/angular-route.js",
+            "../extensions/angular-1.5.0/angular-resource.js",
+            "../app/blog/scripts/directives/directives.js",
+            "../app/blog/scripts/services/services.js",
+            "../app/blog/scripts/blog.js",
+            "../app/blog/scripts/controllers/blog.js" },
+        Startup : "" }
 
     linkModel := &model.LinkSrvModel{}
     linkList, _ := linkModel.FindAllLinks()
@@ -69,7 +84,7 @@ func (controller *BlogController) IndexAction(w http.ResponseWriter, r *http.Req
         blogMenu.HasSubMenu = (len(blogMenu.SubMenu) > 0)
         mainParams.Menus = append(mainParams.Menus, blogMenu)
     }
-    tmpl, err := template.ParseFiles("client/app/blog/index.html")
+    tmpl, err := template.ParseFiles("client/app/blog/blog.html")
     if err != nil {
         log.Fatal("BlogController::IndexAction: ", err)
     }
@@ -77,7 +92,7 @@ func (controller *BlogController) IndexAction(w http.ResponseWriter, r *http.Req
     err = tmpl.Execute(w, mainParams)
 }
 
-func (controller *BlogController) NewAction(w http.ResponseWriter, r *http.Request) {
+func (controller *BlogController) AdminAction(w http.ResponseWriter, r *http.Request) {
     /*
     startup := `
     <script type="text/javascript">
@@ -91,7 +106,7 @@ func (controller *BlogController) NewAction(w http.ResponseWriter, r *http.Reque
         Stylesheets: []string {
             "../extensions/bootstrap-3.3.5/dist/css/bootstrap.min.css",
             "../extensions/simditor/styles/simditor.css",
-            "../app/blog/styles/newblog.css" },
+            "../app/blog/styles/admin.css" },
         Javscripts: []string {
             "../extensions/angular-1.5.0/angular.js",
             "../extensions/angular-1.5.0/angular-route.js",
@@ -100,8 +115,8 @@ func (controller *BlogController) NewAction(w http.ResponseWriter, r *http.Reque
             "../app/blog/scripts/services/services.js",
             "../app/section/scripts/services/services.js",
             "../app/category/scripts/services/services.js",
-            "../app/blog/scripts/app.js",
-            "../app/blog/scripts/controllers/controllers.js",
+            "../app/blog/scripts/admin.js",
+            "../app/blog/scripts/controllers/admin.js",
             "../js/jquery-1.11.3/jquery-1.11.3.min.js",
             "../extensions/bootstrap-3.3.5/dist/js/bootstrap.min.js",
             "../extensions/simditor/scripts/module.js",
@@ -112,7 +127,7 @@ func (controller *BlogController) NewAction(w http.ResponseWriter, r *http.Reque
 
     //newParams.Startup = template.HTML(startup)
 
-    tmpl, err := template.ParseFiles("client/app/blog/newblog.html")
+    tmpl, err := template.ParseFiles("client/app/blog/admin.html")
     if err != nil {
         log.Fatal("BlogController::NewAction: ", err)
     }
