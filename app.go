@@ -168,6 +168,38 @@ func menuSrvHandler(w http.ResponseWriter, r *http.Request) {
         })
 }
 
+func sectionHandler(w http.ResponseWriter, r *http.Request) {
+    section := controller.NewSectionController()
+    controller := reflect.ValueOf(section)
+    controllerAction(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
+func sectionSrvHandler(w http.ResponseWriter, r *http.Request) {
+    sectionSrv := controller.NewSectionSrvController()
+    controller := reflect.ValueOf(sectionSrv)
+    controllerResty(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
+func categoryHandler(w http.ResponseWriter, r *http.Request) {
+    category := controller.NewCategoryController()
+    controller := reflect.ValueOf(category)
+    controllerAction(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
+func categorySrvHandler(w http.ResponseWriter, r *http.Request) {
+    categorySrv := controller.NewCategorySrvController()
+    controller := reflect.ValueOf(categorySrv)
+    controllerResty(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
 func main() {
     p := handleCommandLine()
 
@@ -198,6 +230,12 @@ func main() {
     http.HandleFunc("/menu/", menuHandler)    
     http.HandleFunc("/menusrv", menuSrvHandler)
     http.HandleFunc("/menusrv/", menuSrvHandler)    
+    http.HandleFunc("/section/", sectionHandler)
+    http.HandleFunc("/sectionsrv", sectionSrvHandler)
+    http.HandleFunc("/sectionsrv/", sectionSrvHandler)
+    http.HandleFunc("/category/", categoryHandler)
+    http.HandleFunc("/categorysrv", categorySrvHandler)
+    http.HandleFunc("/categorysrv/", categorySrvHandler)
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {

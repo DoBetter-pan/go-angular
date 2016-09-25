@@ -1,35 +1,59 @@
 <div class="site-content">
     <form name="blogForm" class="form-horizontal" ng-submit="save()">
-        <div class="pull-left" width="60%">
-            <div class="control-group">
-                <label class="control-label" for="title">标题</label>
-                <div class="controls">
-                    <input class="input-xlarge" id="title" focus ng-model="blog.title">
-                </div>		
+        <div class="col-sm-9">
+            <div class="form-group">
+                <label class="control-label" for="title">标题:</label>
+                <input type="text" class="form-control input-lg" id="title" focus ng-model="blog.title">
             </div>
 
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="description">内容:</label>
-                <div class="controls">
-                    <textarea class="input-xlarge" id="content" placeholder="" autofocus ng-model="blog.content"></textarea>
-                </div>		
+                <textarea class="form-control" id="content" placeholder="" autofocus ng-model="blog.content"></textarea>
             </div>	
         </div>	
 
-        <div class="pull-right">
-            <div class="form-actions">
-                <button class="btn btn-primary">Save</button>
-                <button type="button" class="btn" ng-show="recipe.id!=-1" ng-click="remove()">Delete</button>
-            </div>
+        <div class="col-sm-3">
+            <div class="content-aside">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" ng-click="save()">发布</button>
+                </div>	
 
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Panel title</h3>
-                </div>
-                <div class="panel-body">
-                    Panel content
-                </div>
-            </div>
+                <div class="form-group">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">文章设置</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="panel-aside">
+                                <div class="form-group">
+                                    <label class="control-label" for="title">状态:</label>
+                                    <select class="form-control" ng-model="blog.status">
+                                        <option value="1">草稿</option>
+                                        <option value="2">隐藏</option>
+                                        <option value="3" selected>公开</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="title">分区:</label>
+                                    <select class="form-control" ng-model="blog.sectionId">
+                                        <option>草稿</option>
+                                        <option>隐藏</option>
+                                        <option>公开</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="title">分类:</label>
+                                    <select class="form-control" ng-model="blog.categoryId">
+                                        <option>草稿</option>
+                                        <option>隐藏</option>
+                                        <option>公开</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>	
+            </div>	
         </div>	
 
     </form>

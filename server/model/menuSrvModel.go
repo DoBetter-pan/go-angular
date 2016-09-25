@@ -15,38 +15,9 @@ import (
 	dbwrapper "go-angular/server/datawrapper"
 )
 
-type Section struct {
-     Id int64 `json:"id"`
-     Name  string `json:"name"`
-     Url  string `json:"url"`
-     Authority int64 `json:"authority"`
-}
-
-type Category struct {
-     Id int64 `json:"id"`
-     Name  string `json:"name"`
-     Url  string `json:"url"`
-}
-
 type Menu struct {
      MainMenu Section
      SubMenu []Category
-}
-
-var sectionSqls map[string] string = map[string] string {
-    "query":"select id, name, url, authority from ng_blog_section",
-    "queryone":"select id, name, url, authority from ng_blog_section where id=?",
-    "insert":"insert into ng_blog_section( name, url, authority) values( ?, ?, ?)",
-    "update":"update ng_blog_section set name=?, url=?, authority=? where id=?",
-    "delete":"delete from ng_blog_section where id=?",
-}
-
-var categorySqls map[string] string = map[string] string {
-    "query":"select id, name, url from ng_blog_category where sectionId=?",
-    "queryone":"select id, name, url from ng_blog_category where id=?",
-    "insert":"insert into ng_blog_category( name, url, sectionId) values( ?, ?, ?)",
-    "update":"update ng_blog_category set name=?, url=?, sectionId=? where id=?",
-    "delete":"delete from ng_blog_category where id=?",
 }
 
 type MenuSrvModel struct {
