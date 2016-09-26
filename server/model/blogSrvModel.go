@@ -25,6 +25,7 @@ type Article struct {
     ContentHtml  string `json:"contentHtml"`
     Excerpt  string `json:"excerpt"`
     ExcerptHtml  string `json:"excerptHtml"`
+    Url  string `json:"url"`
     Section string `json:"section"`
     Category string `json:"category"`
     CommentCount int64 `json:"commentCount"`
@@ -48,6 +49,7 @@ type ArticleDesc struct {
     Id int64 `json:"id"`
     Title  string `json:"title"`
     TitleHtml  string `json:"titleHtml"`
+    Url  string `json:"url"`
 }
 
 type ArticlesInCategory struct {
@@ -67,6 +69,7 @@ type ArticleWriter struct {
     ContentHtml  string `json:"contentHtml"`
     Excerpt  string `json:"excerpt"`
     ExcerptHtml  string `json:"excerptHtml"`
+    Url  string `json:"url"`
     Section int64 `json:"section"`
     Category int64 `json:"category"`
     CommentCount int64 `json:"commentCount"`
@@ -81,7 +84,7 @@ var blogSqls map[string] string = map[string] string {
     "queryindex":"select id, title, titleHtml from ng_blog_article where categoryId=? order by posted desc limit 3",
     "querylist":"select article.id, user.name, title, titleHtml, content, contentHtml, IFNULL(excerpt, '') as excerpt, IFNULL(excerptHtml, '') as excerptHtml, section.name, category.name, commentsCount, status, posted, lastMod, IFNULL(expires, '') as expires from ng_blog_article article, ng_blog_section section, ng_blog_category category, ng_blog_user user where article.sectionId=section.id and categoryId=category.id and authorId=user.id",
     "querycount":"select count(*) as total from ng_blog_article where 1",
-    "queryone":"select id, name, age, sex from blog where id=?",
+    "queryone":"select article.id, user.name, title, titleHtml, content, contentHtml, IFNULL(excerpt, '') as excerpt, IFNULL(excerptHtml, '') as excerptHtml, section.name, category.name, commentsCount, status, posted, lastMod, IFNULL(expires, '') as expires from ng_blog_article article, ng_blog_section section, ng_blog_category category, ng_blog_user user where article.sectionId=section.id and categoryId=category.id and authorId=user.id and article.id=?",
     "insert":"insert into ng_blog_article( authorId, title, titleHtml, content, contentHtml, sectionId, categoryId, commentsCount, status, posted, lastMod) values( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     "update":"update blog set name=?, age=?, sex=? where id=?",
     "delete":"delete from blog where id=?",
@@ -125,14 +128,14 @@ func (model *BlogSrvModel) FindAllByKeyValue(key string, value, page int64) (str
     articleList.Page = page
     if page > 0 {
         articleList.HasPrevious = 1
-        articleList.PreviousUrl = fmt.Sprintf("/#/list?%s=%d&p=%d", key, value, page - 1)
+        articleList.PreviousUrl = CreateUrlByKeyValue(key, value, page - 1)
     } else {
         articleList.HasPrevious = 0
         articleList.PreviousUrl = ""
     }
     if articleList.Total - (page + 1) * 10 > 0 {
         articleList.HasNext = 1
-        articleList.NextUrl = fmt.Sprintf("/#/list?%s=%d&p=%d", key, value, page + 1)
+        articleList.NextUrl = CreateUrlByKeyValue(key, value, page + 1)
     } else {
         articleList.HasNext = 0
         articleList.NextUrl = ""
@@ -151,6 +154,7 @@ func (model *BlogSrvModel) FindAllByKeyValue(key string, value, page int64) (str
 
         err = rowsArticle.Scan(&art.Id, &art.Author, &art.Title, &art.TitleHtml, &art.Content, &art.ContentHtml, &art.Excerpt, &art.ExcerptHtml, &art.Section, &art.Category, &art.CommentCount, &art.Status, &art.Posted, &art.LastMod, &art.Expires)
         if err == nil {
+            art.Url = CreateUrl(BLOG_ARTICLE, art.Id, 0)
             articleList.Articles = append(articleList.Articles, art)
         }
     }
@@ -220,6 +224,7 @@ func (model *BlogSrvModel) FindAll() (string, error) {
 
             err = rowsArticle.Scan(&art.Id, &art.Title, &art.TitleHtml )
             if err == nil {
+                art.Url = CreateUrl(BLOG_ARTICLE, art.Id, 0)
                 artsInCatList[i].Articles = append(artsInCatList[i].Articles, art)
             }
         }
@@ -241,22 +246,20 @@ func (model *BlogSrvModel) FindAll() (string, error) {
 }
 
 func (model *BlogSrvModel) Find(id int64) (string, error) {
-    /*
-    var blog Blog
+    var art Article
     dbconnection := dbwrapper.GetDatabaseConnection()
-    err := dbconnection.DB.QueryRow(blogSqls["queryone"], id).Scan( &blog.Id, &blog.Name, &blog.Age, &blog.Sex)
+    err := dbconnection.DB.QueryRow(blogSqls["queryone"], id).Scan(&art.Id, &art.Author, &art.Title, &art.TitleHtml, &art.Content, &art.ContentHtml, &art.Excerpt, &art.ExcerptHtml, &art.Section, &art.Category, &art.CommentCount, &art.Status, &art.Posted, &art.LastMod, &art.Expires)
     if err != nil {
         return "", err
     }
+    art.Url = CreateUrl(BLOG_ARTICLE, art.Id, 0)
 
-    data, err := json.Marshal(blog)
+    data, err := json.Marshal(art)
     if err != nil {
         return "", err
     }
 
     return string(data), nil
-    */
-    return "", nil
 }
 
 func (model *BlogSrvModel) Insert(str string) (string, error) {

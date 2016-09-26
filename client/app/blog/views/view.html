@@ -1,9 +1,28 @@
-<h2>[[blog.name]]</h2>
-<div>[[blog.age]]</div>
-<div>[[blog.sex]]</div>
-
-<form class="form-horizontal" ng-submit="edit()">
-	<div class="form-actions">
-		<button class="btn btn-primary">Edit</button>
-	</div>	
-</form>
+<div class="site-content">
+    <div class="article">
+        <div class="article-header">
+            <div class="article-title">
+                <a href="#">[[article.titleHtml]]</a>
+            </div>
+            <div class="comment-link">
+                <a href="#" title=""><span class="commet-reply">发表回复</span></a>
+            </div>
+        </div>
+        <div class="article-content">
+            [[article.contentHtml]]
+        </div>
+        <div class="article-footer">
+            <span>本文章发布于</span><a href="#">[[article.posted]]</a>。
+            <span>属于</span><a href="#">[[article.section]]</a>，<a href="#">[[article.category]]</a>分类。
+            <span>作者是</span><a href="#">[[article.author]]</a>
+        </div>
+    </div>
+    <div class="article-navigation">
+        <div class="nav-previous">
+            <a href="#"><span class="nav-meta">←早期文章</span></a>
+        </div>
+        <div class="nav-next">
+            <a href="#"><span class="nav-meta">较新文章→</span></a>
+        </div>
+    </div>
+</div>

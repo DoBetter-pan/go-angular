@@ -5,7 +5,7 @@
 * @date 2016-03-15
  */
 
-var admin = angular.module('admin', ['ngRoute', 'blog.services', 'section.services', 'category.services', 'util.directives']);
+var admin = angular.module('admin', ['ngRoute', 'blog.services', 'section.services', 'category.services', 'util.directives' ]);
 
 admin.config(['$interpolateProvider', function($interpolateProvider){
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
@@ -23,7 +23,7 @@ admin.config(['$routeProvider', function($routeProvider){
             }
         },
         templateUrl: '/app/blog/views/newblog.html'
-    }).when('/list', {
+    }).when('/listblog', {
         controller: 'ListCtrl',
         resolve: {
             articles: function(MultiBlogLoader) {
@@ -31,7 +31,7 @@ admin.config(['$routeProvider', function($routeProvider){
             }
         },
         templateUrl: '/app/blog/views/list.html'
-    }).when('/edit/:blogId', {
+    }).when('/editblog/:blogId', {
         controller: 'EditCtrl',
         resolve: {
             article: function(BlogLoader){
@@ -39,16 +39,13 @@ admin.config(['$routeProvider', function($routeProvider){
             }
         },
         templateUrl: '/app/blog/views/form.html'
-    }).when('/view/:blogId', {
-        controller: 'ViewCtrl',
+    }).when('/viewblog/:blogId', {
+        controller: 'ViewBlogCtrl',
         resolve: {
             article: function(BlogLoader) {
                 return BlogLoader();
             }
         },
         templateUrl: '/app/blog/views/view.html'
-    }).when('/new', {
-        controller: 'NewCtrl',
-        templateUrl: '/app/blog/views/form.html'
     }).otherwise({redirectTo: '/newblog'});
 }]);

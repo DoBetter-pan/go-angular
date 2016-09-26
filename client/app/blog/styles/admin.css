@@ -72,3 +72,63 @@
 .panel-aside {
     margin: 0 20px 20px 20px;  
 }
+
+.recent-post {
+    margin:10px;
+    padding-left: 30px;
+    line-height: 20px;
+    font-size: 16px;
+    list-style-type: circle;
+}
+
+.article-list {
+    margin: 10px;
+}
+
+.article {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 4px double #ededed;
+    word-wrap: break-word;
+}
+
+.article-header,.article-footer {
+    margin-top: 24px;
+    line-height: 18px;
+    font-size: 14px;
+    color: #757575;
+}
+
+.article-title {
+    line-height: 30px;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.comment-link {
+    margin-top: 24px;
+    line-height: 18px;
+    font-size: 14px;
+    color: #757575;
+}
+
+.article-content {
+    margin-top: 24px;
+    line-height: 20px;
+    font-size: 16px;
+}
+
+.article-navigation {
+    clear: both;
+    overflow: hidden;
+    line-height: 20px;
+    font-size: 16px;
+}
+
+.nav-previous {
+    float: left;
+}
+
+.nav-next {
+    float: right;
+}
