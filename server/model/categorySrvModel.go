@@ -19,12 +19,13 @@ type Category struct {
      Id int64 `json:"id"`
      Name  string `json:"name"`
      Url  string `json:"url"`
+     SectionId  string `json:"sectionId"`     
 }
 
 var categorySqls map[string] string = map[string] string {
-    "query":"select id, name, url from ng_blog_category",
+    "query":"select id, name, url, sectionId from ng_blog_category",
     "querybysec":"select id, name, url from ng_blog_category where sectionId=?",
-    "queryone":"select id, name, url from ng_blog_category where id=?",
+    "queryone":"select id, name, url, sectionId from ng_blog_category where id=?",
     "insert":"insert into ng_blog_category( name, url, sectionId) values( ?, ?, ?)",
     "update":"update ng_blog_category set name=?, url=?, sectionId=? where id=?",
     "delete":"delete from ng_blog_category where id=?",
@@ -48,7 +49,7 @@ func (model *CategorySrvModel) FindAll() (string, error) {
     categoryList := make([]Category, 0, 10)
     for rows.Next() {
         var category Category
-        err = rows.Scan( &category.Id, &category.Name, &category.Url)
+        err = rows.Scan( &category.Id, &category.Name, &category.Url, &category.SectionId)
         if err == nil {
             categoryList = append(categoryList, category)
         }
@@ -70,7 +71,7 @@ func (model *CategorySrvModel) FindAll() (string, error) {
 func (model *CategorySrvModel) Find(id int64) (string, error) {
     var category Category
     dbconnection := dbwrapper.GetDatabaseConnection()
-    err := dbconnection.DB.QueryRow(categorySqls["queryone"], id).Scan( &category.Id, &category.Name, &category.Url)
+    err := dbconnection.DB.QueryRow(categorySqls["queryone"], id).Scan( &category.Id, &category.Name, &category.Url, &category.SectionId)
     if err != nil {
         return "", err
     }
@@ -97,7 +98,7 @@ func (model *CategorySrvModel) Insert(str string) (string, error) {
         return "", err
     }
 
-    res, err := tx.Exec(categorySqls["insert"],  category.Name, category.Url, category.Id)
+    res, err := tx.Exec(categorySqls["insert"],  category.Name, category.Url, category.SectionId, category.Id)
     if err != nil {
         tx.Rollback()
         return "", err
@@ -135,7 +136,7 @@ func (model *CategorySrvModel) Update(id int64, str string) (string, error) {
     }
 
     //just update, not check if it is same before updating. It may be supported in future
-    _, err = tx.Exec(categorySqls["update"],  category.Name, category.Url, category.Id)
+    _, err = tx.Exec(categorySqls["update"],  category.Name, category.Url, category.SectionId, category.Id)
     if err != nil {
         tx.Rollback()
         return "", err

@@ -59,7 +59,7 @@ func (model *MenuSrvModel) FindAllMenus() ([]Menu, error) {
 
     menuLen := len(menuList)
     for i := 0; i < menuLen; i++ {
-        rowsCat, err := tx.Query(categorySqls["query"], menuList[i].MainMenu.Id)
+        rowsCat, err := tx.Query(categorySqls["querybysec"], menuList[i].MainMenu.Id)
         if err != nil {
             tx.Rollback()
             return menuList, err

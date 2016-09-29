@@ -9,6 +9,7 @@ package model
 
 import (
 	"fmt"
+    "time"
     "encoding/json"
     _ "database/sql"
     _ "github.com/go-sql-driver/mysql"
@@ -57,12 +58,31 @@ type ArticlesInCategory struct {
     Articles []ArticleDesc `json:"articles"`
 }
 
+type ArticleWriter struct {
+    Id int64 `json:"id"`
+    Author  int64 `json:"author"`
+    Title  string `json:"title"`
+    TitleHtml  string `json:"titleHtml"`
+    Content  string `json:"content"`
+    ContentHtml  string `json:"contentHtml"`
+    Excerpt  string `json:"excerpt"`
+    ExcerptHtml  string `json:"excerptHtml"`
+    Section int64 `json:"section"`
+    Category int64 `json:"category"`
+    CommentCount int64 `json:"commentCount"`
+    Status int64 `json:"status"`
+    Posted  string `json:"posted"`
+    LastMod string `json:"lastMod"`
+    Expires string `json:"expires"`
+}
+
+
 var blogSqls map[string] string = map[string] string {
     "queryindex":"select id, title, titleHtml from ng_blog_article where categoryId=? order by posted desc limit 3",
     "querylist":"select article.id, user.name, title, titleHtml, content, contentHtml, IFNULL(excerpt, '') as excerpt, IFNULL(excerptHtml, '') as excerptHtml, section.name, category.name, commentsCount, status, posted, lastMod, IFNULL(expires, '') as expires from ng_blog_article article, ng_blog_section section, ng_blog_category category, ng_blog_user user where article.sectionId=section.id and categoryId=category.id and authorId=user.id",
     "querycount":"select count(*) as total from ng_blog_article where 1",
     "queryone":"select id, name, age, sex from blog where id=?",
-    "insert":"insert into blog( name, age, sex) values( ?, ?, ?)",
+    "insert":"insert into ng_blog_article( authorId, title, titleHtml, content, contentHtml, sectionId, categoryId, commentsCount, status, posted, lastMod) values( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     "update":"update blog set name=?, age=?, sex=? where id=?",
     "delete":"delete from blog where id=?",
     "category":"select id, name, url, description from ng_blog_category where 1",
@@ -240,8 +260,7 @@ func (model *BlogSrvModel) Find(id int64) (string, error) {
 }
 
 func (model *BlogSrvModel) Insert(str string) (string, error) {
-    /*
-    var blog Blog
+    var blog ArticleWriter
 
     err := json.Unmarshal([]byte(str), &blog)
     if err != nil {
@@ -254,7 +273,9 @@ func (model *BlogSrvModel) Insert(str string) (string, error) {
         return "", err
     }
 
-    res, err := tx.Exec(blogSqls["insert"],  blog.Name, blog.Age, blog.Sex, blog.Id)
+    now := time.Now()
+    nowString := now.Format("2006-01-02 15:04:05")
+    res, err := tx.Exec(blogSqls["insert"],  blog.Author, blog.Title, blog.TitleHtml, blog.Content, blog.ContentHtml, blog.Section, blog.Category, 0, blog.Status, nowString, nowString)
     if err != nil {
         tx.Rollback()
         return "", err
@@ -275,8 +296,6 @@ func (model *BlogSrvModel) Insert(str string) (string, error) {
     }
 
     return string(data), nil
-    */
-    return "", nil
 }
 
 func (model *BlogSrvModel) Update(id int64, str string) (string, error) {

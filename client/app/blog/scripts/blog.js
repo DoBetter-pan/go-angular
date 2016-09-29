@@ -28,14 +28,6 @@ blog.config(['$routeProvider', function($routeProvider){
             }
         },
         templateUrl: '/app/blog/views/list.html'
-    }).when('/edit/:blogId', {
-        controller: 'EditCtrl',
-        resolve: {
-            article: function(BlogLoader){
-                return BlogLoader();
-            }
-        },
-        templateUrl: '/app/blog/views/form.html'
     }).when('/view/:blogId', {
         controller: 'ViewCtrl',
         resolve: {
@@ -44,8 +36,5 @@ blog.config(['$routeProvider', function($routeProvider){
             }
         },
         templateUrl: '/app/blog/views/view.html'
-    }).when('/new', {
-        controller: 'NewCtrl',
-        templateUrl: '/app/blog/views/form.html'
     }).otherwise({redirectTo: '/'});
 }]);
