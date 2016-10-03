@@ -16,7 +16,7 @@ admin.controller('NewBlogCtrl', ['$scope', '$location', 'BlogSrv', 'sections', '
                 $scope.categoriesBySec.push(e);
             }
         });
-
+        $scope.blog.category = null;
     };
     $scope.blog = new BlogSrv({
         id: -1
