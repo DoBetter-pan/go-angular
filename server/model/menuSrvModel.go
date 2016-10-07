@@ -47,6 +47,9 @@ func (model *MenuSrvModel) FindAllMenus() ([]Menu, error) {
         menu.SubMenu = make([]Category, 0, 10)
         err = rows.Scan( &menu.MainMenu.Id, &menu.MainMenu.Name, &menu.MainMenu.Url, &menu.MainMenu.Authority)
         if err == nil {
+            if len(menu.MainMenu.Url) == 0 {
+                menu.MainMenu.Url = CreateUrl(BLOG_SECTION, menu.MainMenu.Id, 0)              
+            }
             menuList = append(menuList, menu)
         }
     }
@@ -70,6 +73,9 @@ func (model *MenuSrvModel) FindAllMenus() ([]Menu, error) {
             var cat Category
             err = rowsCat.Scan( &cat.Id, &cat.Name, &cat.Url)
             if err == nil {
+                if len(cat.Url) == 0 {
+                    cat.Url = CreateUrl(BLOG_CATEGORY, cat.Id, 0)    
+                }                
                 menuList[i].SubMenu = append(menuList[i].SubMenu, cat)
             } 
         }

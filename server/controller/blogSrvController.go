@@ -50,7 +50,7 @@ func (controller *BlogSrvController) Query(w http.ResponseWriter, r *http.Reques
         if err == nil {
             blog := &model.BlogSrvModel{}
             if isFirstPage {
-                res, err = blog.FindAll()
+                res, err = blog.FindAllByCount(3)
             } else {
                 res, err = blog.FindAllByKeyValue(k, v, p)
             }
