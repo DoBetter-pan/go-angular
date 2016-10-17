@@ -48,6 +48,14 @@ func NewBlogController() *BlogController {
     return controller
 }
 
+func (controller *BlogController) CheckRules() map[string] []string {
+    rules := make(map[string] []string, 5)
+    rules["AdminAction"] = []string {
+        "allow 1",
+        "deny *" }
+    return rules
+}
+
 func (controller *BlogController) IndexAction(w http.ResponseWriter, r *http.Request) {
     mainParams := &BlogMainParams{
         Stylesheets: []string {

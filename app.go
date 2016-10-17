@@ -10,11 +10,13 @@ package main
 import (
 	"net/http"
 	"strings"
+	"strconv"
 	"reflect"
 	"log"
 	"fmt"
 	"flag"
 	controller "go-angular/server/controller"
+	session "go-angular/server/session"
 )
 
 type params struct {
@@ -34,6 +36,53 @@ func handleCommandLine() *params {
 
 type Controller func() reflect.Value
 
+func checkRules(w http.ResponseWriter, r *http.Request, c Controller, action string) bool {
+    validated := true
+	controllerInstance := c()
+
+    checkRules := controllerInstance.MethodByName("CheckRules")
+	if checkRules.IsValid() {
+        //get rules
+        rulesMapRef := checkRules.Call([]reflect.Value{})
+
+        rulesMap := rulesMapRef[0].Interface().(map[string] []string)
+        rules, ok := rulesMap[action]
+        if ok {
+            //valid, id, name, nonce := session.ValidateSessionByCookie(r)
+            valid, id, _, _ := session.ValidateSessionByCookie(r)
+            idStr := strconv.FormatInt(id, 10)
+            isExit := false
+            for _, rule := range(rules) {
+                strArray := strings.Split(rule, " ")
+                if len(strArray) == 2 {
+                    //compute allow, not validated will be deny
+                    if strArray[1] == "*" {
+                        isExit = true
+                        validated = true
+                    } else {
+                        idArray := strings.Split(strArray[1], ",")
+                        for _, v := range(idArray){
+                            if v == idStr && valid {
+                                isExit = true
+                                validated = true
+                                break
+                            }
+                        }
+                    }
+                    if strArray[0] == "deny" {
+                        validated = !validated
+                    }
+                    if isExit {
+                        break
+                    }
+                }
+            }
+        }
+	}
+
+    return validated
+}
+
 func controllerAction(w http.ResponseWriter, r *http.Request, c Controller) {
 	path := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
@@ -44,14 +93,22 @@ func controllerAction(w http.ResponseWriter, r *http.Request, c Controller) {
 	}
 	action = strings.Title(action) + "Action"
 
-	controller := c()
-	method := controller.MethodByName(action)
+	controllerInstance := c()
+	method := controllerInstance.MethodByName(action)
 	if !method.IsValid() {
-		method = controller.MethodByName("IndexAction")
+        action = "IndexAction"
+		method = controllerInstance.MethodByName(action)
 	}
-	requestValue := reflect.ValueOf(r)
-	responseValue := reflect.ValueOf(w)
-	method.Call([]reflect.Value{responseValue, requestValue})
+
+    validated := checkRules(w, r, c, action)
+    if validated {
+        requestValue := reflect.ValueOf(r)
+        responseValue := reflect.ValueOf(w)
+        method.Call([]reflect.Value{responseValue, requestValue})
+    } else {
+        login := controller.NewLoginController()
+        login.IndexAction(w, r)
+    }
 }
 
 func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
@@ -94,10 +151,10 @@ func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
 			action = "Query"
 	}
 
-	controller := c()
-	operation := controller.MethodByName(action)
+	controllerInstance := c()
+	operation := controllerInstance.MethodByName(action)
 	if !operation.IsValid() {
-		operation = controller.MethodByName("Get")
+		operation = controllerInstance.MethodByName("Get")
 	}
 	requestValue := reflect.ValueOf(r)
 	responseValue := reflect.ValueOf(w)
@@ -200,6 +257,14 @@ func categorySrvHandler(w http.ResponseWriter, r *http.Request) {
         })
 }
 
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+    login := controller.NewLoginController()
+    controller := reflect.ValueOf(login)
+    controllerAction(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
 func main() {
     p := handleCommandLine()
 
@@ -236,6 +301,8 @@ func main() {
     http.HandleFunc("/category/", categoryHandler)
     http.HandleFunc("/categorysrv", categorySrvHandler)
     http.HandleFunc("/categorysrv/", categorySrvHandler)
+    http.HandleFunc("/login", loginHandler)
+    http.HandleFunc("/login/", loginHandler)    
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {

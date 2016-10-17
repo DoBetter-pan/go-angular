@@ -47,3 +47,6 @@ func GetError(err error) string {
 
     return str
 }
+
+func ValidateUserCookie(r *http.Request) {
+}
