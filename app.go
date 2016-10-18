@@ -265,6 +265,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
         })
 }
 
+func loginSrvHandler(w http.ResponseWriter, r *http.Request) {
+    loginSrv := controller.NewLoginSrvController()
+    controller := reflect.ValueOf(loginSrv)
+    controllerResty(w, r, func() reflect.Value {
+        return controller
+        })
+}
+
 func main() {
     p := handleCommandLine()
 
@@ -295,14 +303,18 @@ func main() {
     http.HandleFunc("/menu/", menuHandler)    
     http.HandleFunc("/menusrv", menuSrvHandler)
     http.HandleFunc("/menusrv/", menuSrvHandler)    
+    http.HandleFunc("/section", sectionHandler)
     http.HandleFunc("/section/", sectionHandler)
     http.HandleFunc("/sectionsrv", sectionSrvHandler)
     http.HandleFunc("/sectionsrv/", sectionSrvHandler)
+    http.HandleFunc("/category", categoryHandler)
     http.HandleFunc("/category/", categoryHandler)
     http.HandleFunc("/categorysrv", categorySrvHandler)
     http.HandleFunc("/categorysrv/", categorySrvHandler)
     http.HandleFunc("/login", loginHandler)
     http.HandleFunc("/login/", loginHandler)    
+    http.HandleFunc("/loginsrv", loginSrvHandler)
+    http.HandleFunc("/loginsrv/", loginSrvHandler)    
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {
