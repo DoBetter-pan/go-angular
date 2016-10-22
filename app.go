@@ -121,35 +121,40 @@ func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
 		id = parts[1]
 	}
 	method := r.Method
-	switch method {
-		case "GET":
-			if id == "" {
-				action = "Query"
-			} else {
-				action = "Get"
-			}
-		case "POST":
+    _, err := strconv.ParseInt(id, 10, 64)
+    if err == nil {
+        switch method {
+        case "GET":
+            if id == "" {
+                action = "Query"
+            } else {
+                action = "Get"
+            }
+        case "POST":
             //-1 represent new item
-			if id == "-1" {
-				action = "New"
-			} else {
-				action = "Update"
-			}
-		case "DELETE":
-			action = "Delete"
-		case "PUT":
-			action = "Update"
-		/*	
-		case "HEAD":
-			action = "Head"
-		case "PATCH":
-			action = "Patch"
-		case "OPTIONS":
-			action = "Options"
-		*/
-		default:
-			action = "Query"
-	}
+            if id == "-1" {
+                action = "New"
+            } else {
+                action = "Update"
+            }
+        case "DELETE":
+            action = "Delete"
+        case "PUT":
+            action = "Update"
+            /*	
+        case "HEAD":
+            action = "Head"
+        case "PATCH":
+            action = "Patch"
+        case "OPTIONS":
+            action = "Options"
+            */
+        default:
+            action = "Query"
+        }
+    } else {
+        action = strings.Title(id)
+    }
 
 	controllerInstance := c()
 	operation := controllerInstance.MethodByName(action)

@@ -12,18 +12,16 @@ app.config(['$interpolateProvider', function($interpolateProvider){
 }]);
 
 app.config(['$routeProvider', function($routeProvider){
-    $routeProvider.when('/', {
+    $routeProvider.when('/view/:loginId', {
         controller: 'ViewCtrl',
-        /*
         resolve: {
-            login: function(LoginLoader){
-                return LoginLoader();
+            login: function(LoginLoaderByCookie){
+                return LoginLoaderByCookie();
             }
         },
-        */
         templateUrl: '/app/login/views/view.html'
     }).when('/new', {
         controller: 'NewCtrl',
         templateUrl: '/app/login/views/form.html'
-    }).otherwise({redirectTo: '/'});
+    }).otherwise({redirectTo: '/view/100000'});
 }]);

@@ -8,8 +8,10 @@
 app.controller('ViewCtrl', ['$scope', '$location', 'login', function($scope, $location, login){
     $scope.login = login;
 
-    $scope.check = function(){
-        $location.path('/edit/' + login.id);
+    $scope.checkUser = function(){
+        $scope.login.$checkUser(function(login){
+            //$location.path('/view/' + login.id);
+        });
     }
 }]);
 

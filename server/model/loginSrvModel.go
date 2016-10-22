@@ -18,16 +18,20 @@ import (
 type Login struct {
      Id int64 `json:"id"`
      Name  string `json:"name"`
-     Age int64 `json:"age"`
-     Sex int64 `json:"sex"`
+     Password string `json:"password"`
+     Nickname string `json:"nickname"`
+     Email string `json:"email"`
+     LastAccess string `json:"lastAccess"`
+     Nonce string `json:"nonce"`
+     Stored int64 `json:"stored"`
 }
 
 var loginSqls map[string] string = map[string] string {
-    "query":"select id, name, age, sex from login",
-    "queryone":"select id, name, age, sex from login where id=?",
-    "insert":"insert into login( name, age, sex) values( ?, ?, ?)",
-    "update":"update login set name=?, age=?, sex=? where id=?",
-    "delete":"delete from login where id=?",
+    "query":"select id, name, password, nickname, email, lastAccess, nonce from ng_blog_user",
+    "queryone":"select id, name, password, nickname, email, lastAccess, nonce from ng_blog_user where id=?",
+    "insert":"insert into ng_blog_user(name, password, nickname, email, lastAccess, nonce) values( ?, ?, ?, ?, ?, ?)",
+    "update":"update ng_blog_user set name=?, password=?, nickname=?, email=?, lastAccess=?, nonce=? where id=?",
+    "delete":"delete from ng_blog_user where id=?",
 }
 
 type LoginSrvModel struct {
@@ -48,7 +52,7 @@ func (model *LoginSrvModel) FindAll() (string, error) {
     loginList := make([]Login, 0, 10)
     for rows.Next() {
         var login Login
-        err = rows.Scan( &login.Id, &login.Name, &login.Age, &login.Sex)
+        err = rows.Scan( &login.Id, &login.Name, &login.Password, &login.Nickname, &login.Email, &login.LastAccess, &login.Nonce)
         if err == nil {
             loginList = append(loginList, login)
         }
@@ -70,7 +74,7 @@ func (model *LoginSrvModel) FindAll() (string, error) {
 func (model *LoginSrvModel) Find(id int64) (string, error) {
     var login Login
     dbconnection := dbwrapper.GetDatabaseConnection()
-    err := dbconnection.DB.QueryRow(loginSqls["queryone"], id).Scan( &login.Id, &login.Name, &login.Age, &login.Sex)
+    err := dbconnection.DB.QueryRow(loginSqls["queryone"], id).Scan(&login.Id, &login.Name, &login.Password, &login.Nickname, &login.Email, &login.LastAccess, &login.Nonce)
     if err != nil {
         return "", err
     }
@@ -97,7 +101,7 @@ func (model *LoginSrvModel) Insert(str string) (string, error) {
         return "", err
     }
 
-    res, err := tx.Exec(loginSqls["insert"],  login.Name, login.Age, login.Sex, login.Id)
+    res, err := tx.Exec(loginSqls["insert"], login.Name, login.Password, login.Nickname, login.Email, login.LastAccess, login.Nonce, login.Id)
     if err != nil {
         tx.Rollback()
         return "", err
@@ -135,7 +139,7 @@ func (model *LoginSrvModel) Update(id int64, str string) (string, error) {
     }
 
     //just update, not check if it is same before updating. It may be supported in future
-    _, err = tx.Exec(loginSqls["update"],  login.Name, login.Age, login.Sex, login.Id)
+    _, err = tx.Exec(loginSqls["update"], login.Name, login.Password, login.Nickname, login.Email, login.LastAccess, login.Nonce, login.Id)
     if err != nil {
         tx.Rollback()
         return "", err
@@ -162,4 +166,12 @@ func (model *LoginSrvModel) Delete(id int64) error {
     tx.Commit()
 
     return nil
+}
+
+func (model *LoginSrvModel) FindObject(id int64) (Login, error) {
+    var login Login
+    dbconnection := dbwrapper.GetDatabaseConnection()
+    err := dbconnection.DB.QueryRow(loginSqls["queryone"], id).Scan(&login.Id, &login.Name, &login.Password, &login.Nickname, &login.Email, &login.LastAccess, &login.Nonce)
+
+    return login, err
 }
