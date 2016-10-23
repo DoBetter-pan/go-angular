@@ -5,12 +5,30 @@
 * @date 2016-03-15
  */
 
-app.controller('ViewCtrl', ['$scope', '$location', 'login', function($scope, $location, login){
+app.controller('ViewCtrl', ['$scope', '$rootScope', '$location', 'login', function($scope, $rootScope, $location, login){
     $scope.login = login;
+
+    var changeLocation = function(url, forceReload) {
+        $scope = $scope || angular.element(document).scope();
+        if(forceReload || $scope.$$phase) {
+            window.location = url;
+        }
+        else {
+            //only use this if you want to replace the history stack
+            //$location.path(url).replace();
+
+            //this this if you want to change the URL and add it to the history stack
+            $location.path(url);
+            $scope.$apply();
+        }
+    };
 
     $scope.checkUser = function(){
         $scope.login.$checkUser(function(login){
-            //$location.path('/view/' + login.id);
+            if(login.status == 0) {
+                //$location.url('/blog');
+                changeLocation('/blog', true);
+            }
         });
     }
 }]);

@@ -158,19 +158,21 @@ func (controller *LoginSrvController) Checkuser(w http.ResponseWriter, r *http.R
     var login Login
     defer r.Body.Close()
     data, err := ioutil.ReadAll(r.Body)
-    if err == nil {     
+    if err == nil {
         err = json.Unmarshal([]byte(data), &login)
-        if err == nil {          
+        if err == nil {
             loginModel := &model.LoginSrvModel{}
             dataLogin, err2 := loginModel.FindObjectByName(login.Name)
-            err = err2              
+            err = err2
             if err == nil {
-                if login.Name != dataLogin.Name || login.Password != dataLogin.Password {                    
-                    err = errors.New("wrong name or password!!!")                
-                } else {                  
+                if login.Name != dataLogin.Name || login.Password != dataLogin.Password {
+                    err = errors.New("wrong name or password!!!")
+                } else {
                     //store cookie
                     if login.Stored == 1 {
                         session.WriteBackSessionCookie(w, login.Id, login.Name, dataLogin.Nonce, "/", 7200)
+                    } else {
+                        session.WriteBackSessionCookie(w, login.Id, login.Name, dataLogin.Nonce, "/", 0)
                     }
                 }
             }

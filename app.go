@@ -106,8 +106,9 @@ func controllerAction(w http.ResponseWriter, r *http.Request, c Controller) {
         responseValue := reflect.ValueOf(w)
         method.Call([]reflect.Value{responseValue, requestValue})
     } else {
-        login := controller.NewLoginController()
-        login.IndexAction(w, r)
+        http.Redirect(w, r, "/login", http.StatusFound)
+        //login := controller.NewLoginController()
+        //login.IndexAction(w, r)
     }
 }
 
@@ -122,7 +123,7 @@ func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
 	}
 	method := r.Method
     _, err := strconv.ParseInt(id, 10, 64)
-    if err == nil {
+    if err == nil || id == "" {
         switch method {
         case "GET":
             if id == "" {
@@ -293,21 +294,21 @@ func main() {
 
 	//http.HandleFunc("/", recipeHandler)
 	http.HandleFunc("/recipe", recipeHandler)
-	http.HandleFunc("/recipe/", recipeHandler)	
+	http.HandleFunc("/recipe/", recipeHandler)
 	http.HandleFunc("/recipesrv", recipeSrvHandler)
-	http.HandleFunc("/recipesrv/", recipeSrvHandler)	
+	http.HandleFunc("/recipesrv/", recipeSrvHandler)
     http.HandleFunc("/blog", blogHandler)
-    http.HandleFunc("/blog/", blogHandler)    
+    http.HandleFunc("/blog/", blogHandler)
     http.HandleFunc("/blogsrv", blogSrvHandler)
-    http.HandleFunc("/blogsrv/", blogSrvHandler)    
+    http.HandleFunc("/blogsrv/", blogSrvHandler)
     http.HandleFunc("/link", linkHandler)
-    http.HandleFunc("/link/", linkHandler)    
+    http.HandleFunc("/link/", linkHandler)
     http.HandleFunc("/linksrv", linkSrvHandler)
-    http.HandleFunc("/linksrv/", linkSrvHandler)    
+    http.HandleFunc("/linksrv/", linkSrvHandler)
     http.HandleFunc("/menu", menuHandler)
-    http.HandleFunc("/menu/", menuHandler)    
+    http.HandleFunc("/menu/", menuHandler)
     http.HandleFunc("/menusrv", menuSrvHandler)
-    http.HandleFunc("/menusrv/", menuSrvHandler)    
+    http.HandleFunc("/menusrv/", menuSrvHandler)
     http.HandleFunc("/section", sectionHandler)
     http.HandleFunc("/section/", sectionHandler)
     http.HandleFunc("/sectionsrv", sectionSrvHandler)
@@ -317,9 +318,9 @@ func main() {
     http.HandleFunc("/categorysrv", categorySrvHandler)
     http.HandleFunc("/categorysrv/", categorySrvHandler)
     http.HandleFunc("/login", loginHandler)
-    http.HandleFunc("/login/", loginHandler)    
+    http.HandleFunc("/login/", loginHandler)
     http.HandleFunc("/loginsrv", loginSrvHandler)
-    http.HandleFunc("/loginsrv/", loginSrvHandler)    
+    http.HandleFunc("/loginsrv/", loginSrvHandler)
     server := fmt.Sprintf("%s:%d", p.host, p.port)
 	err := http.ListenAndServe(server, nil)
 	if err != nil {
