@@ -29,6 +29,7 @@ type Login struct {
 var loginSqls map[string] string = map[string] string {
     "query":"select id, name, password, nickname, email, lastAccess, nonce from ng_blog_user",
     "queryone":"select id, name, password, nickname, email, lastAccess, nonce from ng_blog_user where id=?",
+    "queryonebyname":"select id, name, password, nickname, email, lastAccess, nonce from ng_blog_user where name=?",
     "insert":"insert into ng_blog_user(name, password, nickname, email, lastAccess, nonce) values( ?, ?, ?, ?, ?, ?)",
     "update":"update ng_blog_user set name=?, password=?, nickname=?, email=?, lastAccess=?, nonce=? where id=?",
     "delete":"delete from ng_blog_user where id=?",
@@ -172,6 +173,14 @@ func (model *LoginSrvModel) FindObject(id int64) (Login, error) {
     var login Login
     dbconnection := dbwrapper.GetDatabaseConnection()
     err := dbconnection.DB.QueryRow(loginSqls["queryone"], id).Scan(&login.Id, &login.Name, &login.Password, &login.Nickname, &login.Email, &login.LastAccess, &login.Nonce)
+
+    return login, err
+}
+
+func (model *LoginSrvModel) FindObjectByName(name string) (Login, error) {
+    var login Login
+    dbconnection := dbwrapper.GetDatabaseConnection()
+    err := dbconnection.DB.QueryRow(loginSqls["queryonebyname"], name).Scan(&login.Id, &login.Name, &login.Password, &login.Nickname, &login.Email, &login.LastAccess, &login.Nonce)
 
     return login, err
 }

@@ -140,7 +140,7 @@ func ValidateSessionByCookie(r *http.Request) (bool, int64, string, string) {
     return validated, id, name, nonce
 }
 
-func WriteBackSessionCookie(w http.ResponseWriter, id int64, name, nonce string, path string, timeout int64) {
+func WriteBackSessionCookie(w http.ResponseWriter, id int64, name, nonce string, path string, timeout int) {
     cookieValue := MakeSession(id, name , nonce)
     cookie := http.Cookie{Name: session_name, Value: cookieValue, Path: path, MaxAge: timeout}
     http.SetCookie(w, &cookie)

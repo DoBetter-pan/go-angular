@@ -13,7 +13,7 @@ import (
 	"errors"
     _ "strings"
     _ "strconv"
-	_ "io/ioutil"
+	"io/ioutil"
     "encoding/json"
 	model "go-angular/server/model"
 	session "go-angular/server/session"
@@ -156,21 +156,21 @@ func (controller *LoginSrvController) Getuser(w http.ResponseWriter, r *http.Req
 
 func (controller *LoginSrvController) Checkuser(w http.ResponseWriter, r *http.Request) {
     var login Login
-
     defer r.Body.Close()
     data, err := ioutil.ReadAll(r.Body)
-    if err == nil {
+    if err == nil {     
         err = json.Unmarshal([]byte(data), &login)
-        if err == nil {
+        if err == nil {          
             loginModel := &model.LoginSrvModel{}
-            dataLogin, err := loginModel.FindObject(login.Id)
+            dataLogin, err2 := loginModel.FindObjectByName(login.Name)
+            err = err2              
             if err == nil {
-                if login.Name != dataLogin.Name || login.Password != dataLogin.Password {
-                    err := errors.New("wrong name or password!!!")
-                } else {
+                if login.Name != dataLogin.Name || login.Password != dataLogin.Password {                    
+                    err = errors.New("wrong name or password!!!")                
+                } else {                  
                     //store cookie
                     if login.Stored == 1 {
-                        WriteBackSessionCookie(w, login.Id, login.Name, dataLogin.Nonce, "/", 7200)
+                        session.WriteBackSessionCookie(w, login.Id, login.Name, dataLogin.Nonce, "/", 7200)
                     }
                 }
             }
