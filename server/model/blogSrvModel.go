@@ -11,6 +11,7 @@ import (
 	"fmt"
     "time"
     "encoding/json"
+    "strconv"
     _ "database/sql"
     _ "github.com/go-sql-driver/mysql"
 	dbwrapper "go-angular/server/datawrapper"
@@ -309,7 +310,7 @@ func (model *BlogSrvModel) Find(id int64) (string, error) {
     return string(data), nil
 }
 
-func (model *BlogSrvModel) Insert(str string) (string, error) {
+func (model *BlogSrvModel) Insert(id, str string) (string, error) {
     var blog ArticleWriter
 
     err := json.Unmarshal([]byte(str), &blog)
@@ -323,6 +324,9 @@ func (model *BlogSrvModel) Insert(str string) (string, error) {
         return "", err
     }
 
+    //don't need check id because it must be number
+    idInt, _ := strconv.ParseInt(id, 10, 64)
+    blog.Author = idInt
     now := time.Now()
     nowString := now.Format("2006-01-02 15:04:05")
     res, err := tx.Exec(blogSqls["insert"],  blog.Author, blog.Title, blog.TitleHtml, blog.Content, blog.ContentHtml, blog.Section, blog.Category, 0, blog.Status, nowString, nowString)

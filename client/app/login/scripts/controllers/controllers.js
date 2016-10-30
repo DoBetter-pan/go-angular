@@ -27,7 +27,7 @@ app.controller('ViewCtrl', ['$scope', '$rootScope', '$location', 'login', functi
         $scope.login.$checkUser(function(login){
             if(login.status == 0) {
                 //$location.url('/blog');
-                changeLocation('/blog', true);
+                changeLocation('/blog/admin', true);
             }
         });
     }

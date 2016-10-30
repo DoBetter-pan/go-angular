@@ -82,9 +82,9 @@ func AesDecrypt(ciphertext []byte) ([]byte, error) {
     return plaintext, nil
 }
 
-func MakeSession(id int64, name, nonce string) string {
+func MakeSession(id int64, name, role, nonce string) string {
     encoded := ""
-    s := fmt.Sprintf("%d\t%s\t%s", id, name, nonce)
+    s := fmt.Sprintf("%d\t%s\t%s\t%s", id, name, role, nonce)
 
     b, err := AesEncrypt([]byte(s))
     if err == nil {
@@ -98,51 +98,51 @@ func MakeSession(id int64, name, nonce string) string {
     return encoded
 }
 
-func ValidateSession(str string) (bool, int64, string, string) {
+func ValidateSession(str string) (bool, int64, string, string, string) {
     l := len(str)
     t := str[l - 1]
     b := str[:l - 1]
 
     if t != 'a' && t != 'b' {
-        return false, 0, "", ""
+        return false, 0, "", "", ""
     }
 
     decoded, err := base64.StdEncoding.DecodeString(b)
     if err != nil {
-        return false, 0, "", ""
+        return false, 0, "", "", ""
     }
     if t == 'a' {
         decoded, err = AesDecrypt(decoded)
         if err != nil {
-            return false, 0, "", ""
+            return false, 0, "", "", ""
         }
     }
     strArray := strings.Split(string(decoded), "\t")
-    if len(strArray) != 3 {
-        return false, 0, "", ""
+    if len(strArray) != 4 {
+        return false, 0, "", "", ""
     }
     i64, err := strconv.ParseInt(strArray[0], 10, 64)
     if err != nil {
-        return false, 0, "", ""
+        return false, 0, "", "", ""
     }
 
-    return true, i64, strArray[1], strArray[2]
+    return true, i64, strArray[1], strArray[2], strArray[3]
 }
 
-func ValidateSessionByCookie(r *http.Request) (bool, int64, string, string) {
+func ValidateSessionByCookie(r *http.Request) (bool, int64, string, string, string) {
     userCookie, err := r.Cookie(session_name)
     if err != nil {
-        return false, 0, "", ""
+        return false, 0, "", "", ""
     }
 
-    validated, id, name, nonce := ValidateSession(userCookie.Value)
+    validated, id, name, role, nonce := ValidateSession(userCookie.Value)
     //need check database
-    return validated, id, name, nonce
+    return validated, id, name, role, nonce
 }
 
-func WriteBackSessionCookie(w http.ResponseWriter, id int64, name, nonce string, path string, timeout int) {
+func WriteBackSessionCookie(w http.ResponseWriter, id int64, name, role, nonce string, path string, timeout int) {
     var cookie http.Cookie
-    cookieValue := MakeSession(id, name , nonce)
+    cookieValue := MakeSession(id, name, role, nonce)
     if timeout == 0 {
         cookie = http.Cookie{Name: session_name, Value: cookieValue, Path: path }
     } else {

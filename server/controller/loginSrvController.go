@@ -125,11 +125,11 @@ func (controller *LoginSrvController) Getuser(w http.ResponseWriter, r *http.Req
     var login Login
 
     login.Stored = 0
-    validated, id, name, nonce := session.ValidateSessionByCookie(r)
+    validated, id, name, role, nonce := session.ValidateSessionByCookie(r)
     if validated {
         loginModel := &model.LoginSrvModel{}
         dataLogin, err := loginModel.FindObject(id)
-        if err == nil && name == dataLogin.Name && nonce == dataLogin.Nonce {
+        if err == nil && name == dataLogin.Name && role == dataLogin.Role && nonce == dataLogin.Nonce {
             login.Id = id
             login.Name = name
             login.Password = dataLogin.Password
@@ -170,9 +170,9 @@ func (controller *LoginSrvController) Checkuser(w http.ResponseWriter, r *http.R
                 } else {
                     //store cookie
                     if login.Stored == 1 {
-                        session.WriteBackSessionCookie(w, login.Id, login.Name, dataLogin.Nonce, "/", 7200)
+                        session.WriteBackSessionCookie(w, dataLogin.Id, login.Name, dataLogin.Role, dataLogin.Nonce, "/", 7200)
                     } else {
-                        session.WriteBackSessionCookie(w, login.Id, login.Name, dataLogin.Nonce, "/", 0)
+                        session.WriteBackSessionCookie(w, dataLogin.Id, login.Name, dataLogin.Role, dataLogin.Nonce, "/", 0)
                     }
                 }
             }

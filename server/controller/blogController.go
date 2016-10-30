@@ -51,7 +51,7 @@ func NewBlogController() *BlogController {
 func (controller *BlogController) CheckRules() map[string] []string {
     rules := make(map[string] []string, 5)
     rules["AdminAction"] = []string {
-        "allow 1",
+        "allow admin",
         "deny *" }
     return rules
 }

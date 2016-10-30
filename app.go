@@ -36,21 +36,26 @@ func handleCommandLine() *params {
 
 type Controller func() reflect.Value
 
-func checkRules(w http.ResponseWriter, r *http.Request, c Controller, action string) bool {
+func checkRules(w http.ResponseWriter, r *http.Request, c Controller, action string) (bool, int64, string) {
     validated := true
+    var id int64 = 0
+    name := ""
 	controllerInstance := c()
 
-    checkRules := controllerInstance.MethodByName("CheckRules")
-	if checkRules.IsValid() {
+    controllerCheckRules := controllerInstance.MethodByName("CheckRules")
+    //controllerCheckRules := controllerInstance.MethodByName("IndexAction")    
+	if controllerCheckRules.IsValid() {
         //get rules
-        rulesMapRef := checkRules.Call([]reflect.Value{})
+        rulesMapRef := controllerCheckRules.Call([]reflect.Value{})
 
-        rulesMap := rulesMapRef[0].Interface().(map[string] []string)
+        rulesMap := rulesMapRef[0].Interface().(map[string] []string) 
         rules, ok := rulesMap[action]
         if ok {
             //valid, id, name, nonce := session.ValidateSessionByCookie(r)
-            valid, id, _, _ := session.ValidateSessionByCookie(r)
-            idStr := strconv.FormatInt(id, 10)
+            valid, id2, name2, role, _ := session.ValidateSessionByCookie(r)
+            //idStr := strconv.FormatInt(id, 10) 
+            id = id2
+            name = name2
             isExit := false
             for _, rule := range(rules) {
                 strArray := strings.Split(rule, " ")
@@ -60,9 +65,9 @@ func checkRules(w http.ResponseWriter, r *http.Request, c Controller, action str
                         isExit = true
                         validated = true
                     } else {
-                        idArray := strings.Split(strArray[1], ",")
+                        idArray := strings.Split(strArray[1], ",")                       
                         for _, v := range(idArray){
-                            if v == idStr && valid {
+                            if v == role && valid {
                                 isExit = true
                                 validated = true
                                 break
@@ -80,7 +85,7 @@ func checkRules(w http.ResponseWriter, r *http.Request, c Controller, action str
         }
 	}
 
-    return validated
+    return validated, id, name
 }
 
 func controllerAction(w http.ResponseWriter, r *http.Request, c Controller) {
@@ -100,8 +105,10 @@ func controllerAction(w http.ResponseWriter, r *http.Request, c Controller) {
 		method = controllerInstance.MethodByName(action)
 	}
 
-    validated := checkRules(w, r, c, action)
+    validated, id, name := checkRules(w, r, c, action)
     if validated {
+        idStr := strconv.FormatInt(id, 10)
+        r.SetBasicAuth(idStr, name)
         requestValue := reflect.ValueOf(r)
         responseValue := reflect.ValueOf(w)
         method.Call([]reflect.Value{responseValue, requestValue})
@@ -162,9 +169,17 @@ func controllerResty(w http.ResponseWriter, r *http.Request, c Controller) {
 	if !operation.IsValid() {
 		operation = controllerInstance.MethodByName("Get")
 	}
-	requestValue := reflect.ValueOf(r)
-	responseValue := reflect.ValueOf(w)
-	operation.Call([]reflect.Value{responseValue, requestValue})
+
+    validated, id2, name := checkRules(w, r, c, action)
+    if validated {
+        idStr := strconv.FormatInt(id2, 10)
+        r.SetBasicAuth(idStr, name)
+    	requestValue := reflect.ValueOf(r)
+    	responseValue := reflect.ValueOf(w)
+    	operation.Call([]reflect.Value{responseValue, requestValue})
+    } else {
+        http.Redirect(w, r, "/login", http.StatusFound)   
+    }
 }
 
 func recipeHandler(w http.ResponseWriter, r *http.Request) {

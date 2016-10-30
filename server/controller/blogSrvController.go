@@ -22,6 +22,20 @@ func NewBlogSrvController() *BlogSrvController {
 	return &BlogSrvController{}
 }
 
+func (controller *BlogSrvController) CheckRules() map[string] []string {
+    rules := make(map[string] []string, 5)
+    rules["New"] = []string {
+        "allow admin,writer",
+        "deny *" }
+    rules["Update"] = []string {
+        "allow admin,writer",
+        "deny *" }
+    rules["Delete"] = []string {
+        "allow admin,writer",
+        "deny *" }                
+    return rules
+}
+
 func (controller *BlogSrvController) Query(w http.ResponseWriter, r *http.Request) {
     res := "[]"
     err := r.ParseForm()
@@ -79,11 +93,15 @@ func (controller *BlogSrvController) New(w http.ResponseWriter, r *http.Request)
     res := "{}"
 
     //r.ParseForm()
+    id, _, ok := r.BasicAuth()
+    if !ok {
+        id = "0"
+    }
     defer r.Body.Close()
     data, err := ioutil.ReadAll(r.Body)
     if err == nil {
         blog := &model.BlogSrvModel{}
-        res, err = blog.Insert(string(data))
+        res, err = blog.Insert(id, string(data))
         if err != nil {
             res = "{}"
         }

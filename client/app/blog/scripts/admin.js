@@ -46,6 +46,6 @@ admin.config(['$routeProvider', function($routeProvider){
                 return BlogLoader();
             }
         },
-        templateUrl: '/app/blog/views/view.html'
+        templateUrl: '/app/blog/views/viewblog.html'
     }).otherwise({redirectTo: '/newblog'});
 }]);
